@@ -1,0 +1,125 @@
+@model List<SmartTuitionManagementSystem.Models.StudentViewModel>
+
+@{
+ViewData["Title"] = "Student List";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="fas fa-users me-2"></i>
+                Student List
+            </h4>
+            <a asp-action="AddStudent" asp-controller="Students" class="btn btn-light">
+                <i class="fas fa-plus me-2"></i>Add New Student
+            </a>
+        </div>
+        <div class="card-body">
+            @if (TempData["SuccessMessage"] != null)
+            {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            }
+
+            @if (Model == null || !Model.Any())
+            {
+            <div class="text-center py-5">
+                <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No students added yet</h5>
+                <p class="text-muted">Click "Add New Student" to get started</p>
+            </div>
+            }
+            else
+            {
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Grade</th>
+                        <th>Parent Name</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var student in Model)
+                    {
+                    <tr>
+                        <td>@student.Id</td>
+                        <td>@student.FullName</td>
+                        <td>@student.Email</td>
+                        <td>@student.PhoneNumber</td>
+                        <td>@student.Grade</td>
+                        <td>@student.ParentName</td>
+                        <td>
+                            <a asp-action="EditStudent" asp-controller="Students" asp-route-id="@student.Id" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button onclick="deleteStudent(@student.Id, '@student.FullName')" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+@* Add AntiForgeryToken for the delete operations *@
+@Html.AntiForgeryToken()
+
+@section Scripts {
+<script>
+    function deleteStudent(id, name) {
+        if (confirm(`Are you sure you want to delete student "${name}"?`)) {
+            // Get the anti-forgery token from the page
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            if (!token) {
+                console.error('Anti-forgery token not found');
+                alert('Security token not found. Please refresh the page and try again.');
+                return;
+            }
+
+            fetch(`/Students/DeleteStudent/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({}) // Send empty body as required
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting');
+                });
+        }
+    }
+</script>
+}

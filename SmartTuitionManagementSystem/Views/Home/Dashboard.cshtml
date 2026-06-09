@@ -1,0 +1,234 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Welcome Row -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1">
+                            <i class="fas fa-chart-line text-primary me-2"></i>
+                            Welcome back, @(User.Identity?.Name ?? "Admin")!
+                        </h4>
+                        <p class="text-muted mb-0">Here's what's happening with your tuition center today.</p>
+                    </div>
+                    <div>
+                        <span class="badge bg-primary p-3">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            @DateTime.Now.ToString("dddd, MMMM dd, yyyy")
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card stat-primary h-100 shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Total Students</h6>
+                        <h2 class="mb-0">@ViewBag.StudentCount</h2>
+                        <small class="text-success"><i class="fas fa-arrow-up"></i> +0 this month</small>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-user-graduate fa-3x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card stat-success h-100 shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Active Teachers</h6>
+                        <h2 class="mb-0">0</h2>
+                        <small class="text-success"><i class="fas fa-arrow-up"></i> +0 this month</small>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-chalkboard-user fa-3x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card stat-warning h-100 shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Monthly Revenue</h6>
+                        <h2 class="mb-0">$0</h2>
+                        <small class="text-danger"><i class="fas fa-arrow-down"></i> pending</small>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign fa-3x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card stat-info h-100 shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Active Classes</h6>
+                        <h2 class="mb-0">0</h2>
+                        <small class="text-muted"><i class="fas fa-clock"></i> 0 ongoing</small>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-chalkboard fa-3x text-info"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts & Recent Activity -->
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line text-primary me-2"></i>Revenue Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div style="position: relative; height: 300px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock text-warning me-2"></i>Recent Activities
+                </h5>
+            </div>
+            <div class="card-body" style="max-height: 350px; overflow-y: auto;">
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-inbox fa-3x mb-2"></i>
+                    <p>No recent activities</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt text-primary me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3 col-6">
+                        <a href="#" class="text-decoration-none">
+                            <div class="quick-action-card text-center p-3 border rounded">
+                                <i class="fas fa-user-plus fa-2x text-primary mb-2"></i>
+                                <div class="fw-bold">Add Student</div>
+                                <small class="text-muted">Register new student</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="#" class="text-decoration-none">
+                            <div class="quick-action-card text-center p-3 border rounded">
+                                <i class="fas fa-person-chalkboard fa-2x text-success mb-2"></i>
+                                <div class="fw-bold">Add Teacher</div>
+                                <small class="text-muted">Hire new teacher</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="#" class="text-decoration-none">
+                            <div class="quick-action-card text-center p-3 border rounded">
+                                <i class="fas fa-hand-holding-usd fa-2x text-info mb-2"></i>
+                                <div class="fw-bold">Collect Fee</div>
+                                <small class="text-muted">Record payment</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="#" class="text-decoration-none">
+                            <div class="quick-action-card text-center p-3 border rounded">
+                                <i class="fas fa-chart-line fa-2x text-warning mb-2"></i>
+                                <div class="fw-bold">View Reports</div>
+                                <small class="text-muted">Analytics & stats</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .stat-card { transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; border-radius: 15px; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+        .stat-icon { opacity: 0.7; }
+        .quick-action-card { transition: all 0.3s; cursor: pointer; background: white; border-radius: 10px; }
+        .quick-action-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-color: #0d6efd !important; background: #f8f9fa; }
+        .stat-primary { border-left: 4px solid #0d6efd; }
+        .stat-success { border-left: 4px solid #198754; }
+        .stat-warning { border-left: 4px solid #ffc107; }
+        .stat-info    { border-left: 4px solid #0dcaf0; }
+        .card { border-radius: 15px; }
+        .card-header { border-radius: 15px 15px 0 0 !important; border-bottom: 2px solid #f0f2f5; }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                datasets: [{
+                    label: 'Revenue ($)',
+                    data: [0,0,0,0,0,0,0,0,0,0,0,0],
+                    borderColor: 'rgb(78 223 97 / 0.18)',
+                    backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,  // FIX: Was true — caused chart to ignore wrapper height
+                plugins: { legend: { position: 'top' } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: value => '$' + value }
+                    }
+                }
+            }
+        });
+    </script>
+}

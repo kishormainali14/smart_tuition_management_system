@@ -1,0 +1,184 @@
+﻿@{
+    ViewData["Title"] = "Smart Tuition Management System";
+    // FIX: Removed Layout = "_Layout" — already set in _ViewStart.cshtml
+}
+
+<!-- Hero Section -->
+<section class="hero-section text-center py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">Smart Tuition Management System</h1>
+                <p class="lead mb-4">
+                    The complete solution for managing your tuition center efficiently.
+                    Track students, manage fees, schedule classes, and generate reports - all in one place.
+                </p>
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login to Dashboard
+                    </a>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg px-4">
+                        <i class="fas fa-user-plus me-2"></i>Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose Smart Tuition?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 bg-white rounded shadow-sm h-100">
+                    <div class="feature-icon mb-3"><i class="fas fa-user-graduate fa-3x text-primary"></i></div>
+                    <h4>Student Management</h4>
+                    <p class="text-muted">Easily manage student profiles, attendance records, academic progress, and communication history.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 bg-white rounded shadow-sm h-100">
+                    <div class="feature-icon mb-3"><i class="fas fa-money-bill-wave fa-3x text-success"></i></div>
+                    <h4>Fee Management</h4>
+                    <p class="text-muted">Track payments, manage dues, generate invoices, and get automatic fee reminders.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 bg-white rounded shadow-sm h-100">
+                    <div class="feature-icon mb-3"><i class="fas fa-chalkboard-user fa-3x text-warning"></i></div>
+                    <h4>Teacher Portal</h4>
+                    <p class="text-muted">Manage teacher schedules, assignments, salary tracking, and performance metrics.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 bg-white rounded shadow-sm h-100">
+                    <div class="feature-icon mb-3"><i class="fas fa-chart-line fa-3x text-info"></i></div>
+                    <h4>Reports & Analytics</h4>
+                    <p class="text-muted">Generate detailed reports on fees, attendance, performance, and financial statistics.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 bg-white rounded shadow-sm h-100">
+                    <div class="feature-icon mb-3"><i class="fas fa-calendar-alt fa-3x text-danger"></i></div>
+                    <h4>Class Scheduling</h4>
+                    <p class="text-muted">Create and manage class schedules, avoid conflicts, and track attendance easily.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 bg-white rounded shadow-sm h-100">
+                    <div class="feature-icon mb-3"><i class="fas fa-shield-alt fa-3x text-secondary"></i></div>
+                    <h4>Secure & Reliable</h4>
+                    <p class="text-muted">Your data is secure with enterprise-grade security and regular backups.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section py-5 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-3"><h2 class="display-4 fw-bold">500+</h2><p class="mb-0">Active Students</p></div>
+            <div class="col-md-3"><h2 class="display-4 fw-bold">50+</h2><p class="mb-0">Expert Teachers</p></div>
+            <div class="col-md-3"><h2 class="display-4 fw-bold">1000+</h2><p class="mb-0">Happy Parents</p></div>
+            <div class="col-md-3"><h2 class="display-4 fw-bold">98%</h2><p class="mb-0">Satisfaction Rate</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="step-circle bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:60px;height:60px;">
+                    <h3 class="mb-0">1</h3>
+                </div>
+                <h5>Create Account</h5>
+                <p class="text-muted">Sign up for free and set up your tuition center profile</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="step-circle bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:60px;height:60px;">
+                    <h3 class="mb-0">2</h3>
+                </div>
+                <h5>Add Data</h5>
+                <p class="text-muted">Add students, teachers, classes, and fee structures</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="step-circle bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:60px;height:60px;">
+                    <h3 class="mb-0">3</h3>
+                </div>
+                <h5>Start Managing</h5>
+                <p class="text-muted">Track attendance, collect fees, and monitor progress</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">What Our Clients Say</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testimonial-card p-4 bg-white rounded shadow-sm">
+                    <i class="fas fa-quote-left fa-2x text-primary mb-3"></i>
+                    <p class="mb-3">"This system has transformed how we manage our tuition center. Fee collection has become so much easier!"</p>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user-circle fa-2x text-muted"></i>
+                        <div class="ms-3"><h6 class="mb-0">Rajesh Sharma</h6><small class="text-muted">Center Director</small></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card p-4 bg-white rounded shadow-sm">
+                    <i class="fas fa-quote-left fa-2x text-primary mb-3"></i>
+                    <p class="mb-3">"The reporting feature is amazing! I can track all payments and generate reports in seconds."</p>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user-circle fa-2x text-muted"></i>
+                        <div class="ms-3"><h6 class="mb-0">Priya Patel</h6><small class="text-muted">Tuition Owner</small></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card p-4 bg-white rounded shadow-sm">
+                    <i class="fas fa-quote-left fa-2x text-primary mb-3"></i>
+                    <p class="mb-3">"Very user-friendly and great support team. Highly recommended for any tuition center!"</p>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user-circle fa-2x text-muted"></i>
+                        <div class="ms-3"><h6 class="mb-0">Amit Kumar</h6><small class="text-muted">Administrator</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5">
+    <div class="container text-center">
+        <div class="bg-primary text-white p-5 rounded-4">
+            <h3 class="mb-3">Ready to Get Started?</h3>
+            <p class="mb-4">Join hundreds of tuition centers using SmartTuition to manage their operations</p>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Start Free Trial
+            </a>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        .hero-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-top: -1.5rem; }
+        .feature-card { transition: transform 0.3s; cursor: pointer; }
+        .feature-card:hover { transform: translateY(-5px); }
+        .step-circle { font-size: 24px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .testimonial-card { transition: transform 0.3s; }
+        .testimonial-card:hover { transform: translateY(-3px); }
+        .cta-section { margin-bottom: -1.5rem; }
+    </style>
+}

@@ -1,0 +1,115 @@
+@model List<SmartTuitionManagementSystem.Models.TeacherViewModel>
+
+@{
+    ViewData["Title"] = "Teacher List";
+}
+
+<div class="container">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="fas fa-chalkboard-user me-2"></i>
+                Teacher List
+            </h4>
+            <a asp-action="AddTeacher" class="btn btn-light">
+                <i class="fas fa-plus me-2"></i>Add New Teacher
+            </a>
+        </div>
+        <div class="card-body">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (Model == null || !Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-chalkboard-user fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">No teachers added yet</h5>
+                    <p>Click "Add New Teacher" to get started</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Qualification</th>
+                                <th>Experience</th>
+                                <th>Salary</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var teacher in Model)
+                            {
+                                <tr>
+                                    <td>@teacher.FullName</td>
+                                    <td>@teacher.Email</td>
+                                    <td>@teacher.PhoneNumber</td>
+                                    <td>@teacher.Qualification</td>
+                                    <td>@teacher.ExperienceYears yrs</td>
+                                    <td>$@teacher.Salary.ToString("N0")</td>
+                                    <td>
+                                        <a asp-action="EditTeacher" asp-route-id="@teacher.Id" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button onclick="deleteTeacher(@teacher.Id, '@teacher.FullName')" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteTeacher(id, name) {
+            if (confirm(`Are you sure you want to delete teacher "${name}"?`)) {
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                
+                fetch(`/Teachers/DeleteTeacher/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Error deleting teacher');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting');
+                });
+            }
+        }
+    </script>
+}

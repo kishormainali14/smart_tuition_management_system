@@ -1,0 +1,103 @@
+@model SmartTuitionManagementSystem.Models.ClassViewModel
+
+@{
+    ViewData["Title"] = "Class Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Class Details
+                    </h4>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Class Name:</label>
+                            <p>@Model.FullClassName</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Class Code:</label>
+                            <p>@(string.IsNullOrEmpty(Model.ClassCode) ? "N/A" : Model.ClassCode)</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Section:</label>
+                            <p>@(string.IsNullOrEmpty(Model.Section) ? "N/A" : Model.Section)</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Room Number:</label>
+                            <p>@(string.IsNullOrEmpty(Model.RoomNumber) ? "Not assigned" : Model.RoomNumber)</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Academic Year:</label>
+                            <p>@Model.AcademicYear</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Maximum Capacity:</label>
+                            <p>@Model.MaxCapacity students</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Current Strength:</label>
+                            <p>
+                                <span class="badge @(Model.CurrentStrength >= Model.MaxCapacity ? "bg-danger" : "bg-success")">
+                                    @Model.CurrentStrength / @Model.MaxCapacity
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Available Seats:</label>
+                            <p>@Model.AvailableSeats</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Status:</label>
+                            <p>
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactive</span>
+                                }
+                            </p>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <div class="col-12 mb-3">
+                                <label class="fw-bold">Description:</label>
+                                <p>@Model.Description</p>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-controller="Class" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="fas fa-edit me-2"></i>
+                            Edit
+                        </a>
+
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

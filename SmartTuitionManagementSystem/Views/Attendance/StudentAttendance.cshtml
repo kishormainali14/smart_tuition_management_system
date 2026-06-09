@@ -1,0 +1,309 @@
+@model SmartTuitionManagementSystem.Models.DailyAttendanceViewModel
+
+@{
+    ViewData["Title"] = "Student Attendance";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>
+                <i class="fas fa-clipboard-list"></i> Daily Attendance Checklist
+            </h2>
+            <p class="text-muted">Mark student attendance quickly and easily</p>
+        </div>
+    </div>
+    
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+    
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+    
+    <!-- Selection Form -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="DailyAttendance" class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="SelectedGrade" class="font-weight-bold"></label>
+                        <select asp-for="SelectedGrade" asp-items="Model.GradeList" class="form-control">
+                            <option value="">-- Select Grade --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="SelectedDate" class="font-weight-bold"></label>
+                        <input asp-for="SelectedDate" type="date" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="font-weight-bold d-block">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-search"></i> Load Students
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    @if (Model.Students.Any())
+    {
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-white bg-info">
+                    <div class="card-body text-center">
+                        <h5>Total Students</h5>
+                        <h2 id="totalCount">@Model.TotalStudents</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body text-center">
+                        <h5>Present</h5>
+                        <h2 id="presentCount">@Model.PresentCount</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-danger">
+                    <div class="card-body text-center">
+                        <h5>Absent</h5>
+                        <h2 id="absentCount">@Model.AbsentCount</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body text-center">
+                        <h5>Attendance %</h5>
+                        <h2 id="attendancePercent">@Model.AttendancePercentage.ToString("F1")%</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <strong><i class="fas fa-bolt"></i> Quick Actions:</strong>
+                        <button type="button" class="btn btn-success btn-sm ml-3" onclick="markAll('Present')">
+                            <i class="fas fa-check-circle"></i> All Present
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="markAll('Absent')">
+                            <i class="fas fa-times-circle"></i> All Absent
+                        </button>
+                        <button type="button" class="btn btn-warning btn-sm" onclick="markAll('Late')">
+                            <i class="fas fa-clock"></i> All Late
+                        </button>
+                        <button type="button" class="btn btn-info btn-sm" onclick="markAll('Excused')">
+                            <i class="fas fa-book"></i> All Excused
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="copyFromPrevious()">
+                            <i class="fas fa-copy"></i> Copy Previous Day
+                        </button>
+                        <span class="ml-3 text-muted">
+                            <i class="fas fa-keyboard"></i> <strong>Keyboard:</strong> 
+                            <span class="badge badge-light">P</span> Present 
+                            <span class="badge badge-light">A</span> Absent 
+                            <span class="badge badge-light">L</span> Late 
+                            <span class="badge badge-light">E</span> Excused
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Attendance Form -->
+        <form method="post" asp-action="Save" id="attendanceForm">
+            <input type="hidden" asp-for="SelectedGrade" />
+            <input type="hidden" asp-for="SelectedDate" />
+            
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Email</th>
+                                    <th width="250">Status</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Students.Count; i++)
+                                {
+                                    <tr>
+                                        <td class="align-middle">
+                                            <strong>@Model.Students[i].FullName</strong>
+                                            <input type="hidden" asp-for="@Model.Students[i].StudentId" />
+                                            <input type="hidden" asp-for="@Model.Students[i].AttendanceId" />
+                                        </td>
+                                        <td class="align-middle">@Model.Students[i].Email</td>
+                                        <td class="align-middle">
+                                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                <label class="btn btn-outline-success btn-sm @(Model.Students[i].Status == "Present" ? "active" : "")">
+                                                    <input type="radio" asp-for="@Model.Students[i].Status" value="Present" onchange="updateSummary()" /> Present
+                                                </label>
+                                                <label class="btn btn-outline-danger btn-sm @(Model.Students[i].Status == "Absent" ? "active" : "")">
+                                                    <input type="radio" asp-for="@Model.Students[i].Status" value="Absent" onchange="updateSummary()" /> Absent
+                                                </label>
+                                                <label class="btn btn-outline-warning btn-sm @(Model.Students[i].Status == "Late" ? "active" : "")">
+                                                    <input type="radio" asp-for="@Model.Students[i].Status" value="Late" onchange="updateSummary()" /> Late
+                                                </label>
+                                                <label class="btn btn-outline-info btn-sm @(Model.Students[i].Status == "Excused" ? "active" : "")">
+                                                    <input type="radio" asp-for="@Model.Students[i].Status" value="Excused" onchange="updateSummary()" /> Excused
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td class="align-middle">
+                                            <input type="text" asp-for="@Model.Students[i].Remarks" class="form-control form-control-sm" placeholder="Optional remarks..." />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-save"></i> Save Attendance
+                            </button>
+                            <a asp-action="DailyAttendance" class="btn btn-secondary btn-lg ml-2">
+                                <i class="fas fa-refresh"></i> Refresh
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+    else if (!string.IsNullOrEmpty(Model.SelectedGrade))
+    {
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle fa-2x"></i>
+            <h5>No students found in @Model.SelectedGrade</h5>
+            <p>Please add students to this grade first.</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function updateSummary() {
+            let present = 0, absent = 0, late = 0, excused = 0;
+            
+            document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
+                const value = radio.value;
+                if (value === 'Present') present++;
+                else if (value === 'Absent') absent++;
+                else if (value === 'Late') late++;
+                else if (value === 'Excused') excused++;
+            });
+            
+            const total = present + absent + late + excused;
+            const percentage = total > 0 ? (present / total * 100).toFixed(1) : 0;
+            
+            document.getElementById('presentCount').innerText = present;
+            document.getElementById('absentCount').innerText = absent;
+            document.getElementById('attendancePercent').innerText = percentage + '%';
+        }
+        
+        function markAll(status) {
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                if (radio.value === status) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event('change'));
+                }
+            });
+            updateSummary();
+        }
+        
+        async function copyFromPrevious() {
+            const grade = document.querySelector('input[name="SelectedGrade"]').value;
+            const date = document.querySelector('input[name="SelectedDate"]').value;
+            
+            if (!grade || !date) {
+                alert('Please select grade and date first');
+                return;
+            }
+            
+            if (confirm('Copy attendance from previous day? This will overwrite current selections.')) {
+                try {
+                    const response = await fetch(`/Attendance/CopyFromPrevious?grade=${grade}&date=${date}`);
+                    const students = await response.json();
+                    
+                    students.forEach((student, index) => {
+                        const radio = document.querySelector(`input[name="Students[${index}].Status"][value="${student.status}"]`);
+                        if (radio) {
+                            radio.checked = true;
+                            radio.dispatchEvent(new Event('change'));
+                        }
+                        
+                        const remarksInput = document.querySelector(`input[name="Students[${index}].Remarks"]`);
+                        if (remarksInput) {
+                            remarksInput.value = student.remarks || '';
+                        }
+                    });
+                    
+                    updateSummary();
+                    alert('Copied from previous day successfully!');
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to copy from previous day');
+                }
+            }
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            const activeElement = document.activeElement;
+            const isInputFocused = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA';
+            
+            if (!isInputFocused) {
+                switch(e.key.toLowerCase()) {
+                    case 'p':
+                        markAll('Present');
+                        break;
+                    case 'a':
+                        markAll('Absent');
+                        break;
+                    case 'l':
+                        markAll('Late');
+                        break;
+                    case 'e':
+                        markAll('Excused');
+                        break;
+                }
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSummary();
+        });
+    </script>
+}

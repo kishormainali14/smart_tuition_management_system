@@ -1,0 +1,144 @@
+@model SmartTuitionManagementSystem.Models.StudentViewModel
+
+@{
+    ViewData["Title"] = "Add Student";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Add New Student
+                    </h4>
+                </div>
+
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <!-- Display Model State Errors -->
+                    <div asp-validation-summary="All" class="alert alert-danger" style="display: none;"></div>
+
+                    <form asp-action="AddStudent" asp-controller="Students" method="post" id="studentForm">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            <!-- Full Name -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FullName" class="form-label fw-semibold"></label>
+                                <input asp-for="FullName" class="form-control" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label fw-semibold"></label>
+                                <input asp-for="Email" type="email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <!-- Grade -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Grade" class="form-label fw-semibold"></label>
+                                <select asp-for="Grade" asp-items="Model.GradeOptions" class="form-select">
+                                    <option value="">-- Select Grade --</option>
+                                </select>
+                                <span asp-validation-for="Grade" class="text-danger"></span>
+                            </div>
+
+                            <!-- DOB -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateOfBirth" class="form-label fw-semibold"></label>
+                                <input asp-for="DateOfBirth" type="date" class="form-control" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                            </div>
+
+                            <!-- Parent Name -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ParentName" class="form-label fw-semibold"></label>
+                                <input asp-for="ParentName" class="form-control" />
+                                <span asp-validation-for="ParentName" class="text-danger"></span>
+                            </div>
+
+                            <!-- Parent Phone -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ParentPhone" class="form-label fw-semibold"></label>
+                                <input asp-for="ParentPhone" class="form-control" />
+                                <span asp-validation-for="ParentPhone" class="text-danger"></span>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="col-12 mb-3">
+                                <label asp-for="Address" class="form-label fw-semibold"></label>
+                                <textarea asp-for="Address" rows="3" class="form-control"></textarea>
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- REMOVED: Hidden fields for EnrollmentDate and IsActive -->
+                        <!-- These will be set in the controller -->
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                Save Student
+                            </button>
+
+                            <a asp-action="StudentList" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        $(document).ready(function() {
+            // Show validation summary if there are errors
+            if (!@ViewData.ModelState.IsValid.ToString().ToLower()) {
+                $('div[asp-validation-summary="All"]').show();
+            }
+            
+            // Log form submission
+            $('#studentForm').on('submit', function() {
+                console.log('Form is being submitted');
+                if ($(this).valid()) {
+                    console.log('Form is valid');
+                } else {
+                    console.log('Form has validation errors');
+                }
+            });
+        });
+    </script>
+}
