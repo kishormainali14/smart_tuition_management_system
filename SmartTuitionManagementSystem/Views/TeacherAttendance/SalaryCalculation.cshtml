@@ -1,0 +1,87 @@
+@model SmartTuitionManagementSystem.Models.SalaryCalculationViewModel
+
+@{
+ViewData["Title"] = "Salary Calculation";
+}
+
+<div class="container-fluid mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0">Salary Calculation - @Model.MonthName</h3>
+        </div>
+        <div class="card-body">
+            <form method="get" class="mb-4">
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Year</label>
+                        <select name="year" class="form-control" asp-items="Model.YearOptions"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <label>Month</label>
+                        <select name="month" class="form-control" asp-items="Model.MonthOptions"></select>
+                    </div>
+                    <div class="col-md-2 align-self-end">
+                        <button type="submit" class="btn btn-primary">Calculate</button>
+                    </div>
+                    <div class="col-md-2 align-self-end">
+                        <a asp-action="ExportSalaryReport" asp-route-year="@Model.SelectedYear" asp-route-month="@Model.SelectedMonth" class="btn btn-success">
+                            <i class="fas fa-file-excel"></i> Export to Excel
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="alert alert-info">
+                <strong>Total Salary Expense: @Model.TotalSalaryExpense.ToString("C")</strong>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="salaryTable">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Teacher</th>
+                        <th>Base Salary</th>
+                        <th>Present</th>
+                        <th>Absent</th>
+                        <th>Late</th>
+                        <th>Half Day</th>
+                        <th>Leave</th>
+                        <th>Earned Salary</th>
+                        <th>Deductions</th>
+                        <th>Net Salary</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model.Salaries)
+                    {
+                    <tr>
+                        <td>@item.TeacherName</td>
+                        <td>@item.BaseSalary.ToString("N0")</td>
+                        <td>@item.PresentDays</td>
+                        <td class="text-danger">@item.AbsentDays</td>
+                        <td class="text-warning">@item.LateDays</td>
+                        <td class="text-info">@item.HalfDays</td>
+                        <td>@item.LeaveDays</td>
+                        <td>@item.EarnedSalary.ToString("N0")</td>
+                        <td class="text-danger">@item.Deductions.ToString("N0")</td>
+                        <td class="fw-bold text-success">@item.NetSalary.ToString("N0")</td>
+                    </tr>
+                    }
+                    </tbody>
+                    <tfoot class="table-secondary fw-bold">
+                    <tr>
+                        <td colspan="9" class="text-end">Total:</td>
+                        <td class="text-end">@Model.TotalSalaryExpense.ToString("C")</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="text-center mt-3">
+                <button class="btn btn-success" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

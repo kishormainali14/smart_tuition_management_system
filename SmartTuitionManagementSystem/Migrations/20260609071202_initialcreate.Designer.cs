@@ -12,8 +12,8 @@ using SmartTuitionManagementSystem.Data;
 namespace SmartTuitionManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260531103318_attendance")]
-    partial class attendance
+    [Migration("20260609071202_initialcreate")]
+    partial class initialcreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,7 +59,70 @@ namespace SmartTuitionManagementSystem.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Attendances", (string)null);
+                    b.ToTable("Attendance", (string)null);
+                });
+
+            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.ClassEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AcademicYear")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ClassCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ClassName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int?>("ClassTeacherId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CurrentStrength")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MaxCapacity")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RoomNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Section")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassTeacherId");
+
+                    b.ToTable("Classes");
                 });
 
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.StudentEntity", b =>
@@ -74,6 +137,9 @@ namespace SmartTuitionManagementSystem.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -125,6 +191,8 @@ namespace SmartTuitionManagementSystem.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClassId");
 
                     b.HasIndex("Email");
 
@@ -209,13 +277,11 @@ namespace SmartTuitionManagementSystem.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Contact")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -224,8 +290,7 @@ namespace SmartTuitionManagementSystem.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -235,18 +300,18 @@ namespace SmartTuitionManagementSystem.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("text");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -256,7 +321,7 @@ namespace SmartTuitionManagementSystem.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.AttendanceEntity", b =>
@@ -268,6 +333,31 @@ namespace SmartTuitionManagementSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.ClassEntity", b =>
+                {
+                    b.HasOne("SmartTuitionManagementSystem.Entities.TeacherEntity", "ClassTeacher")
+                        .WithMany()
+                        .HasForeignKey("ClassTeacherId");
+
+                    b.Navigation("ClassTeacher");
+                });
+
+            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.StudentEntity", b =>
+                {
+                    b.HasOne("SmartTuitionManagementSystem.Entities.ClassEntity", "Class")
+                        .WithMany("Students")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+                });
+
+            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.ClassEntity", b =>
+                {
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.StudentEntity", b =>

@@ -22,43 +22,6 @@ namespace SmartTuitionManagementSystem.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.AttendanceEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("AttendanceDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("MarkedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("MarkedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Remarks")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("Attendance", (string)null);
-                });
-
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.ClassEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -120,6 +83,95 @@ namespace SmartTuitionManagementSystem.Migrations
                     b.HasIndex("ClassTeacherId");
 
                     b.ToTable("Classes");
+                });
+
+            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.ExamEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AcademicYear")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ExamCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ExamName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ExamType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Section")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Exams");
+                });
+
+            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.StudentAttendanceEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AttendanceDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("MarkedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("MarkedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Remarks")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Attendance", (string)null);
                 });
 
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.StudentEntity", b =>
@@ -321,15 +373,168 @@ namespace SmartTuitionManagementSystem.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.AttendanceEntity", b =>
+            modelBuilder.Entity("SmartTuitionManagementSystem.Models.Teacher", b =>
                 {
-                    b.HasOne("SmartTuitionManagementSystem.Entities.StudentEntity", "Student")
-                        .WithMany("Attendances")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                    b.Navigation("Student");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("ExperienceYears")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("HireDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<decimal>("PerDayRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Qualification")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Specialization")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Teacher");
+                });
+
+            modelBuilder.Entity("SmartTuitionManagementSystem.Models.TeacherAttendance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ApprovedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime?>("CheckInTime")
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime?>("CheckOutTime")
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DocumentPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsApproved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<decimal?>("OvertimeHours")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("TotalWorkingHours")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Date")
+                        .HasDatabaseName("IX_TeacherAttendance_Date");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_TeacherAttendance_Status");
+
+                    b.HasIndex("TeacherId")
+                        .HasDatabaseName("IX_TeacherAttendance_TeacherId");
+
+                    b.HasIndex("TeacherId", "Date")
+                        .IsUnique()
+                        .HasDatabaseName("IX_TeacherAttendance_Unique");
+
+                    b.ToTable("TeacherAttendances", (string)null);
                 });
 
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.ClassEntity", b =>
@@ -339,6 +544,17 @@ namespace SmartTuitionManagementSystem.Migrations
                         .HasForeignKey("ClassTeacherId");
 
                     b.Navigation("ClassTeacher");
+                });
+
+            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.StudentAttendanceEntity", b =>
+                {
+                    b.HasOne("SmartTuitionManagementSystem.Entities.StudentEntity", "Student")
+                        .WithMany("Attendances")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.StudentEntity", b =>
@@ -352,12 +568,28 @@ namespace SmartTuitionManagementSystem.Migrations
                     b.Navigation("Class");
                 });
 
+            modelBuilder.Entity("SmartTuitionManagementSystem.Models.TeacherAttendance", b =>
+                {
+                    b.HasOne("SmartTuitionManagementSystem.Models.Teacher", "Teacher")
+                        .WithMany("Attendances")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.ClassEntity", b =>
                 {
                     b.Navigation("Students");
                 });
 
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.StudentEntity", b =>
+                {
+                    b.Navigation("Attendances");
+                });
+
+            modelBuilder.Entity("SmartTuitionManagementSystem.Models.Teacher", b =>
                 {
                     b.Navigation("Attendances");
                 });

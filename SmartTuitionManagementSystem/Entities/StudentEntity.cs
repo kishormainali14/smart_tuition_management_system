@@ -65,5 +65,5 @@ public class StudentEntity
     public virtual ClassEntity? Class { get; set; }
     
     // FIXED: Added initialization
-    public virtual ICollection<AttendanceEntity> Attendances { get; set; } = new List<AttendanceEntity>();
+    public virtual ICollection<StudentAttendanceEntity> Attendances { get; set; } = new List<StudentAttendanceEntity>();
 }

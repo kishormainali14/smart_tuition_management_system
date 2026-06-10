@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Select Teacher";
+}
+
+<div class="container-fluid mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Select Teacher</h3>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="TeacherWise">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Select Teacher</label>
+                        <select name="id" class="form-control" asp-items="ViewBag.Teachers">
+                            <option value="">-- Select Teacher --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 align-self-end">
+                        <button type="submit" class="btn btn-primary">View Attendance</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

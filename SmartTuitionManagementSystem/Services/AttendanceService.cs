@@ -80,7 +80,7 @@ public class AttendanceService : IAttendanceService
                 else
                 {
                     // Create new
-                    var attendance = new AttendanceEntity
+                    var attendance = new StudentAttendanceEntity
                     {
                         StudentId = studentRow.StudentId,
                         AttendanceDate = model.SelectedDate,

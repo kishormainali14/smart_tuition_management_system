@@ -1,7 +1,7 @@
-@model List<SmartTuitionManagementSystem.Models.ClassViewModel>
+@model List<SmartTuitionManagementSystem.Entities.ExamEntity>
 
 @{
-    ViewData["Title"] = "Classes";
+    ViewData["Title"] = "Exam List";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -11,12 +11,12 @@
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">
-                        <i class="fas fa-school me-2"></i>
-                        Class Management
+                        <i class="fas fa-file-alt me-2"></i>
+                        Exam List
                     </h4>
-                    <a asp-action="AddClass" class="btn btn-light btn-sm">
+                    <a asp-action="Create" class="btn btn-light btn-sm">
                         <i class="fas fa-plus me-1"></i>
-                        Add New Class
+                        Add New Exam
                     </a>
                 </div>
 
@@ -41,21 +41,22 @@
                     {
                         <div class="alert alert-info text-center">
                             <i class="fas fa-info-circle me-2"></i>
-                            No classes found. Click "Add New Class" to create your first class.
+                            No exams found. Click "Add New Exam" to create your first exam.
                         </div>
                     }
                     else
                     {
                         <div class="table-responsive">
                             <table class="table table-hover">
-                                <thead>
+                                <thead class="table-light">
                                     <tr>
-                                        <th>Class Name</th>
-                                        <th>Class Code</th>
-                                        <th>Section</th>
-                                        <th>Room Number</th>
-                                        <th>Capacity</th>
+                                        <th>Exam Name</th>
+                                        <th>Exam Code</th>
+                                        <th>Exam Type</th>
                                         <th>Academic Year</th>
+                                        <th>Semester</th>
+                                        <th>Status</th>
+                                        <th>Created Date</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -63,28 +64,34 @@
                                     @foreach (var item in Model)
                                     {
                                         <tr>
-                                            <td>@item.FullClassName</td>
-                                            <td>@item.ClassCode</td>
-                                            <td>@item.Section</td>
-                                            <td>@item.RoomNumber</td>
-                                            <td>
-                                                <span class="badge @(item.CurrentStrength >= item.MaxCapacity ? "bg-danger" : "bg-success")">
-                                                    @item.CurrentStrength / @item.MaxCapacity
-                                                </span>
-                                            </td>
+                                            <td>@item.ExamName</td>
+                                            <td><span class="badge bg-secondary">@item.ExamCode</span></td>
+                                            <td>@item.ExamType</td>
                                             <td>@item.AcademicYear</td>
+                                            <td>@item.Section</td>
                                             <td>
-                                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+                                                @if (item.IsActive)
+                                                {
+                                                    <span class="badge bg-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Inactive</span>
+                                                }
+                                            </td>
+                                            <td>@item.CreatedAt.ToString("dd MMM yyyy")</td>
+                                            <td>
+                                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a asp-action="EditClass" asp-route-id="@item.Id" class="btn btn-sm btn-warning">
+                                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteClass(@item.Id, '@item.ClassName')">
+                                                <button type="button" class="btn btn-sm btn-danger" title="Delete" onclick="deleteExam(@item.Id, '@item.ExamName')">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
-                                             </td>
-                                         </tr>
+                                            </td>
+                                        </tr>
                                     }
                                 </tbody>
                             </table>
@@ -98,10 +105,10 @@
 
 @section Scripts {
     <script>
-        function deleteClass(id, className) {
-            if (confirm(`Are you sure you want to delete class "${className}"? This action cannot be undone.`)) {
+        function deleteExam(id, examName) {
+            if (confirm(`Are you sure you want to delete exam "${examName}"? This action cannot be undone.`)) {
                 $.ajax({
-                    url: '@Url.Action("DeleteClass", "Class")',
+                    url: '@Url.Action("Delete", "Exams")',
                     type: 'POST',
                     data: {
                         id: id,
@@ -115,7 +122,7 @@
                         }
                     },
                     error: function() {
-                        alert('An error occurred while deleting the class.');
+                        alert('An error occurred while deleting the exam.');
                     }
                 });
             }

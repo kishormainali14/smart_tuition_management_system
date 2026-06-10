@@ -1,0 +1,89 @@
+@model SmartTuitionManagementSystem.Models.ExamViewModel
+
+@{
+    ViewData["Title"] = "Edit Exam";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>
+                        Edit Exam
+                    </h4>
+                </div>
+
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ExamName" class="form-label fw-bold"></label>
+                                <input asp-for="ExamName" class="form-control" />
+                                <span asp-validation-for="ExamName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ExamCode" class="form-label fw-bold"></label>
+                                <input asp-for="ExamCode" class="form-control" />
+                                <span asp-validation-for="ExamCode" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ExamType" class="form-label fw-bold"></label>
+                                <select asp-for="ExamType" asp-items="Model.ExamTypeOptions" class="form-select"></select>
+                                <span asp-validation-for="ExamType" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="AcademicYear" class="form-label fw-bold"></label>
+                                <select asp-for="AcademicYear" asp-items="Model.AcademicYearOptions" class="form-select"></select>
+                                <span asp-validation-for="AcademicYear" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Section" class="form-label fw-bold"></label>
+                                <select asp-for="Section" asp-items="Model.SectionOptions" class="form-select"></select>
+                                <span asp-validation-for="Section" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="IsActive" class="form-label fw-bold"></label>
+                                <select asp-for="IsActive" class="form-select">
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label asp-for="Description" class="form-label fw-bold"></label>
+                                <textarea asp-for="Description" rows="3" class="form-control"></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save me-2"></i> Update Exam
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -8,21 +8,21 @@ public class ClassViewModel
     public int Id { get; set; }
 
     [Required(ErrorMessage = "Class name is required")]
-    [StringLength(50, MinimumLength = 2)]
+    [StringLength(50)]
     [Display(Name = "Class Name")]
     public string ClassName { get; set; } = string.Empty;
 
     [Display(Name = "Class Code")]
     [StringLength(20)]
-    public string ClassCode { get; set; } = string.Empty;
+    public string? ClassCode { get; set; }
 
     // ADDED: Grade property
     [Display(Name = "Grade")]
-    public string Grade { get; set; } = string.Empty;
+    public string? Grade { get; set; }
 
     [Display(Name = "Section")]
     [StringLength(10)]
-    public string Section { get; set; } = string.Empty;
+    public string? Section { get; set; }
 
     // Updated FullClassName to include Grade
     [Display(Name = "Full Class Name")]
@@ -34,7 +34,7 @@ public class ClassViewModel
             string sectionPart = string.IsNullOrEmpty(Section) ? "" : $"- {Section}";
             return $"{gradePart} {ClassName} {sectionPart}".Trim();
         }
-        set => throw new NotImplementedException();
+        set { }
     }
 
     [Required]
@@ -49,16 +49,16 @@ public class ClassViewModel
     public int AvailableSeats => MaxCapacity - CurrentStrength;
 
     [Display(Name = "Room Number")]
-    public string RoomNumber { get; set; } = string.Empty;
+    public string? RoomNumber { get; set; }
 
     [Display(Name = "Description")]
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; }
 
     [Display(Name = "Class Teacher")]
     public int? ClassTeacherId { get; set; }
 
     [Display(Name = "Class Teacher")]
-    public string ClassTeacherName { get; set; } = string.Empty;
+    public string? ClassTeacherName { get; set; }
 
     [Required]
     [Display(Name = "Academic Year")]

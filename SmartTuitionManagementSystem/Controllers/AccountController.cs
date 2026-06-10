@@ -16,7 +16,6 @@ public class AccountController : Controller
         _userService = userService;
     }
 
-    // GET: /Account/Login
     [HttpGet]
     public IActionResult Login()
     {
@@ -24,11 +23,9 @@ public class AccountController : Controller
         {
             return RedirectToAction("Dashboard", "Home");
         }
-
         return View();
     }
 
-    // POST: /Account/Login
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
@@ -50,86 +47,37 @@ public class AccountController : Controller
         return View(model);
     }
 
-    // GET: /Account/Register (For self-registration)
     [HttpGet]
     public IActionResult Register()
     {
-        // Check if user is already logged in
-        if (HttpContext.Session.GetString("UserId") != null)
-        {
-            return RedirectToAction("Dashboard", "Home");
-        }
-
-        return View();
+        TempData["ErrorMessage"] = "Public registration is disabled. Contact an administrator.";
+        return RedirectToAction("Login");
     }
 
-    // POST: /Account/Register (For self-registration)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        if (model == null)
-        {
-            TempData["ErrorMessage"] = "No data received";
-            return View(model);
-        }
-
-        _logger.LogInformation($"Register attempt for Email: {model.Email}, Username: {model.Username}");
-
-        if (!ModelState.IsValid)
-        {
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-            _logger.LogWarning($"ModelState invalid: {string.Join(", ", errors)}");
-            return View(model);
-        }
-
-        try
-        {
-            var result = await _userService.RegisterUserAsync(model);
-
-            if (result.Success)
-            {
-                TempData["SuccessMessage"] = result.Message;
-                _logger.LogInformation($"Registration successful for {model.Email}");
-                return RedirectToAction("Dashboard", "Home");
-            }
-            else
-            {
-                ModelState.AddModelError("", result.Message);
-                TempData["ErrorMessage"] = result.Message;
-                _logger.LogWarning($"Registration failed: {result.Message}");
-                return View(model);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Exception during registration for {model.Email}");
-            TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
-            return View(model);
-        }
+        TempData["ErrorMessage"] = "Public registration is disabled. Contact an administrator.";
+        return RedirectToAction("Login");
     }
 
-    // GET: /Account/AddUser (For admin to add users)
     [HttpGet]
     public IActionResult AddUser()
     {
-        // Check if user is admin
         var userRole = HttpContext.Session.GetString("UserRole");
         if (userRole != "Admin")
         {
             TempData["ErrorMessage"] = "Access denied. Admin privileges required.";
             return RedirectToAction("Dashboard", "Home");
         }
-
-        return View("Admin", new RegisterViewModel());
+        return View("~/Views/UserManagement/AddUser.cshtml", new RegisterViewModel());
     }
 
-    // POST: /Account/AddUser (Admin creates a new user)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddUser(RegisterViewModel model)
     {
-        // Check if user is admin
         var userRole = HttpContext.Session.GetString("UserRole");
         if (userRole != "Admin")
         {
@@ -140,7 +88,7 @@ public class AccountController : Controller
         if (model == null)
         {
             TempData["ErrorMessage"] = "No data received";
-            return View("Admin", model);
+            return View("~/Views/UserManagement/AddUser.cshtml", model);
         }
 
         _logger.LogInformation($"Admin AddUser attempt for Email: {model.Email}, Username: {model.Username}");
@@ -150,7 +98,7 @@ public class AccountController : Controller
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
             _logger.LogWarning($"ModelState invalid: {string.Join(", ", errors)}");
             TempData["ErrorMessage"] = "Please fix the validation errors.";
-            return View("Admin", model);
+            return View("~/Views/UserManagement/AddUser.cshtml", model);
         }
 
         try
@@ -161,8 +109,6 @@ public class AccountController : Controller
             {
                 TempData["SuccessMessage"] = $"User '{model.Username}' created successfully!";
                 _logger.LogInformation($"Admin created user: {model.Email}");
-
-                // Redirect back to Users list after successful creation
                 return RedirectToAction("Users");
             }
             else
@@ -170,22 +116,20 @@ public class AccountController : Controller
                 ModelState.AddModelError("", result.Message);
                 TempData["ErrorMessage"] = result.Message;
                 _logger.LogWarning($"Admin user creation failed: {result.Message}");
-                return View("Admin", model);
+                return View("~/Views/UserManagement/AddUser.cshtml", model);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Exception during admin user creation for {model.Email}");
             TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
-            return View("Admin", model);
+            return View("~/Views/UserManagement/AddUser.cshtml", model);
         }
     }
 
-    // GET: /Account/Users (List all users - Admin only)
     [HttpGet]
     public async Task<IActionResult> Users()
     {
-        // Check if user is admin
         var userRole = HttpContext.Session.GetString("UserRole");
         if (userRole != "Admin")
         {
@@ -206,8 +150,6 @@ public class AccountController : Controller
         }
     }
 
-
-// GET: /Account/CheckUsernameAvailability
     [HttpGet]
     public async Task<IActionResult> CheckUsernameAvailability(string username)
     {
@@ -228,7 +170,6 @@ public class AccountController : Controller
         }
     }
 
-    // GET: /Account/CheckEmailAvailability
     [HttpGet]
     public async Task<IActionResult> CheckEmailAvailability(string email)
     {
@@ -249,7 +190,6 @@ public class AccountController : Controller
         }
     }
 
-    // POST: /Account/Logout
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
@@ -259,32 +199,102 @@ public class AccountController : Controller
         return RedirectToAction("Login");
     }
 
-    // GET: /Account/AccessDenied
     [HttpGet]
     public IActionResult AccessDenied()
     {
         return View();
     }
 
+    // ========== SIMPLE PASSWORD RESET ACTIONS ==========
+
     // GET: /Account/ForgotPassword
     [HttpGet]
-    public IActionResult ForgotPassword()
+    public IActionResult ForgetPassword()
     {
         return View();
     }
 
-    // POST: /Account/ForgotPassword
+    // POST: /Account/ForgotPassword - Verify email and go to reset page
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult ForgotPassword(ForgotPasswordViewModel model)
+    public async Task<IActionResult> ForgetPassword(ForgotPasswordViewModel model)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        _logger.LogInformation("Password reset requested for email '{Email}'.", model.Email);
-        TempData["SuccessMessage"] = "If that email is registered, a password reset link has been sent.";
-        return RedirectToAction("Login");
+        var result = await _userService.VerifyUserForResetAsync(model.Email);
+
+        if (result.Success && result.UserId.HasValue)
+        {
+            // Store UserId in TempData for the reset page
+            TempData["ResetUserId"] = result.UserId.Value;
+            TempData["ResetEmail"] = model.Email;
+            return RedirectToAction("ResetPassword");
+        }
+
+        TempData["ErrorMessage"] = result.Message;
+        return View(model);
+    }
+
+    // GET: /Account/ResetPassword
+    [HttpGet]
+    public IActionResult ResetPassword()
+    {
+        // Check if we have a user ID from the forgot password step
+        if (TempData["ResetUserId"] == null)
+        {
+            TempData["ErrorMessage"] = "Please request a password reset first.";
+            return RedirectToAction("ForgetPassword");
+        }
+
+        var model = new ResetPasswordViewModel
+        {
+            UserId = (int)(TempData["ResetUserId"] ?? throw new InvalidOperationException()),
+            Email = TempData["ResetEmail"]?.ToString() ?? string.Empty
+        };
+
+        // Keep TempData for the POST request
+        TempData.Keep("ResetUserId");
+        TempData.Keep("ResetEmail");
+
+        return View(model);
+    }
+
+    // POST: /Account/ResetPassword - Save new password
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        // Verify passwords match
+        if (model.NewPassword != model.ConfirmPassword)
+        {
+            ModelState.AddModelError("", "New password and confirmation password do not match.");
+            return View(model);
+        }
+
+        // Validate password length
+        if (model.NewPassword.Length < 6)
+        {
+            ModelState.AddModelError("", "Password must be at least 6 characters long.");
+            return View(model);
+        }
+
+        var result = await _userService.ResetPasswordDirectAsync(model.UserId, model.NewPassword);
+
+        if (result.Success)
+        {
+            TempData["SuccessMessage"] = result.Message;
+            return RedirectToAction("Login");
+        }
+
+        ModelState.AddModelError("", result.Message);
+        return View(model);
     }
 }

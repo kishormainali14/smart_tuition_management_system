@@ -27,16 +27,14 @@
 
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                    <form asp-action="AddClass" asp-controller="Class" method="post">
+                    <form asp-action="AddClass" asp-controller="Class" method="post" id="classForm">
                         @Html.AntiForgeryToken()
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Grade" class="form-label fw-semibold"></label>
-                                <select asp-for="Grade" asp-items="Model.GradeOptions" class="form-select">
-                                    <option value="">-- Select Grade --</option>
-                                </select>
-                                <span asp-validation-for="Grade" class="text-danger"></span>
+                                <label asp-for="ClassName" class="form-label fw-semibold"></label>
+                                <select asp-for="ClassName" asp-items="Model.GradeOptions" class="form-select"></select>
+                                @*<span asp-validation-for="ClassName" class="text-danger"></span>*@
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -100,14 +98,7 @@
     
     <script>
         $(document).ready(function() {
-            // Show validation summary if there are errors
-            if (!@ViewData.ModelState.IsValid.ToString().ToLower()) {
-                $('div[asp-validation-summary="All"]').show();
-            }
-            
-            // Log form submission
-            $('#studentForm').on('submit', function() {
-                console.log('Form is being submitted');
+            $('#classForm').on('submit', function() {
                 if ($(this).valid()) {
                     console.log('Form is valid');
                 } else {

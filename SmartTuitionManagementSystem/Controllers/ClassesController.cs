@@ -153,14 +153,14 @@ public class ClassController : Controller
             }
 
             // Repopulate grade options with the selected value preserved
-            model.GradeOptions = GetGradeClassOptions(model.Grade);
+            model.GradeOptions = GetGradeClassOptions(model.ClassName);
             return View("~/Views/Classes/AddClass.cshtml", model);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error adding class");
             TempData["ErrorMessage"] = "An unexpected error occurred. Please try again.";
-            model.GradeOptions = GetGradeClassOptions(model.Grade);
+            model.GradeOptions = GetGradeClassOptions(model.ClassName);
             return View("~/Views/Classes/AddClass.cshtml", model);
         }
     }
@@ -190,7 +190,7 @@ public class ClassController : Controller
             }
 
             // Add grade options for the dropdown with selected value
-            classEntity.GradeOptions = GetGradeClassOptions(classEntity.Grade);
+            classEntity.GradeOptions = GetGradeClassOptions(classEntity.ClassName);
 
             return View("~/Views/Classes/EditClass.cshtml", classEntity);
         }
@@ -251,14 +251,14 @@ public class ClassController : Controller
             }
 
             // Repopulate grade options with the selected value preserved
-            model.GradeOptions = GetGradeClassOptions(model.Grade);
+            model.GradeOptions = GetGradeClassOptions(model.ClassName);
             return View("~/Views/Classes/EditClass.cshtml", model);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error updating class. ID: {ClassId}", id);
             TempData["ErrorMessage"] = "An unexpected error occurred. Please try again.";
-            model.GradeOptions = GetGradeClassOptions(model.Grade);
+            model.GradeOptions = GetGradeClassOptions(model.ClassName);
             return View("~/Views/Classes/EditClass.cshtml", model);
         }
     }

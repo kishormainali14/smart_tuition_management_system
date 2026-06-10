@@ -1,20 +1,20 @@
 using Microsoft.EntityFrameworkCore;
 using SmartTuitionManagementSystem.Entities;
+using SmartTuitionManagementSystem.Models;
+using TeacherAttendanceSystem.Entities;
+using TeacherEntity = SmartTuitionManagementSystem.Entities.TeacherEntity;
 
 namespace SmartTuitionManagementSystem.Data;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-    }
-    
     public DbSet<ClassEntity> Classes { get; set; }
-    public DbSet<UserEntity> Users { get; set; }  // ✅ CHANGED: "User" → "Users"
+    public DbSet<UserEntity> Users { get; set; }
     public DbSet<StudentEntity> Students { get; set; }
     public DbSet<TeacherEntity> Teachers { get; set; }
-    public DbSet<AttendanceEntity> Attendances { get; set; }
+    public DbSet<StudentAttendanceEntity> Attendances { get; set; }
+    public DbSet<ExamEntity> Exams { get; set; }
+    public DbSet<TeacherAttendance> TeacherAttendances { get; set; } 
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,7 +23,7 @@ public class ApplicationDbContext : DbContext
         // Configure UserEntity
         modelBuilder.Entity<UserEntity>(entity =>
         {
-            entity.ToTable("Users");  // ✅ ADD THIS to explicitly set table name
+            entity.ToTable("Users");
             entity.HasIndex(e => e.Username).IsUnique();
             entity.HasIndex(e => e.Email).IsUnique();
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -50,17 +50,61 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Salary).HasColumnType("decimal(18,2)");
         });
         
-        // Configure AttendanceEntity
-        modelBuilder.Entity<AttendanceEntity>(entity =>
+        // Configure StudentAttendanceEntity
+        modelBuilder.Entity<StudentAttendanceEntity>(entity =>
         {
-            entity.ToTable("Attendance");  // ✅ Match your [Table("Attendance")] attribute
+            entity.ToTable("Attendance");
             entity.HasKey(e => e.Id);
             
-            // Add relationship configuration
             entity.HasOne(a => a.Student)
                 .WithMany(s => s.Attendances)
                 .HasForeignKey(a => a.StudentId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // ========== TEACHER ATTENDANCE CONFIGURATION ==========
+        
+        // Configure TeacherAttendance
+        modelBuilder.Entity<TeacherAttendance>(entity =>
+        {
+            entity.ToTable("TeacherAttendances");
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.TeacherId).IsRequired();
+            entity.Property(e => e.Date).IsRequired().HasColumnType("date");
+            entity.Property(e => e.Status).IsRequired().HasConversion<int>();
+            
+            // FIXED: datetime → timestamp for PostgreSQL
+            entity.Property(e => e.CheckInTime).HasColumnType("timestamp");
+            entity.Property(e => e.CheckOutTime).HasColumnType("timestamp");
+            
+            entity.Property(e => e.TotalWorkingHours).HasColumnType("decimal(5,2)");
+            entity.Property(e => e.OvertimeHours).HasColumnType("decimal(5,2)");
+            entity.Property(e => e.Remarks).HasMaxLength(500);
+            entity.Property(e => e.IsApproved).HasDefaultValue(false);
+            entity.Property(e => e.ApprovedDate).HasColumnType("timestamp");
+            entity.Property(e => e.RejectionReason).HasMaxLength(200);
+            entity.Property(e => e.DocumentPath).HasMaxLength(500);
+            
+            // FIXED: datetime → timestamp for audit fields
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp").HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp");
+            
+            // Unique constraint
+            entity.HasIndex(e => new { e.TeacherId, e.Date })
+                .IsUnique()
+                .HasDatabaseName("IX_TeacherAttendance_Unique");
+            
+            // Indexes
+            entity.HasIndex(e => e.TeacherId).HasDatabaseName("IX_TeacherAttendance_TeacherId");
+            entity.HasIndex(e => e.Date).HasDatabaseName("IX_TeacherAttendance_Date");
+            entity.HasIndex(e => e.Status).HasDatabaseName("IX_TeacherAttendance_Status");
+            
+            // Relationship
+            entity.HasOne(e => e.Teacher)
+                .WithMany(t => t.Attendances)
+                .HasForeignKey(e => e.TeacherId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

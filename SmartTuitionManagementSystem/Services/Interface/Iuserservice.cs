@@ -24,9 +24,12 @@ namespace SmartTuitionManagementSystem.Services
         Task<List<UserViewModel>> GetAllUsersAsync();
         Task<ServiceResult> UpdateUserAsync(UserViewModel model);
         Task<ServiceResult> DeleteUserAsync(int userId);
+        
+        // SIMPLE Password Reset Methods (No Email, No Security Questions)
+        Task<(bool Success, string Message, int? UserId)> VerifyUserForResetAsync(string email);
+        Task<(bool Success, string Message)> ResetPasswordDirectAsync(int userId, string newPassword);
     }
     
-    // Helper class for consistent service responses
     public class ServiceResult
     {
         public bool Success { get; set; }

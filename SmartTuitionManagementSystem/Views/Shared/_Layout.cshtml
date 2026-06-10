@@ -112,6 +112,7 @@
             transition: all 0.3s;
             border-radius: 0.5rem;
             margin: 0 0.5rem;
+            text-decoration: none;
         }
 
         .nav-link:hover {
@@ -177,7 +178,7 @@
             transform: rotate(90deg);
         }
 
-        /* Logout button styling - FIXED */
+        /* Logout button styling */
         .logout-form {
             width: 100%;
             margin: 0;
@@ -436,6 +437,7 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
+
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -445,14 +447,16 @@
 
     <div class="sidebar-nav">
         <ul class="nav flex-column">
+            <!-- Dashboard -->
             <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")"
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")"
                    asp-controller="Home" asp-action="Dashboard">
                     <i class="fas fa-tachometer-alt"></i>
                     <span class="nav-text">Dashboard</span>
                 </a>
             </li>
 
+            <!-- Students Dropdown -->
             <li class="nav-item nav-dropdown" id="studentsDropdown">
                 <a class="nav-link" href="#" onclick="toggleDropdown(event, 'studentsDropdown')">
                     <i class="fas fa-users"></i>
@@ -460,7 +464,7 @@
                     <i class="fas fa-chevron-right dropdown-icon"></i>
                 </a>
                 <div class="nav-dropdown-menu">
-                    <a class="nav-link" asp-controller="Students" asp-action="Index">
+                    <a class="nav-link" asp-controller="Students" asp-action="StudentList">
                         <i class="fas fa-list"></i>
                         <span class="nav-text">All Students</span>
                     </a>
@@ -471,6 +475,7 @@
                 </div>
             </li>
 
+            <!-- Teachers Dropdown -->
             <li class="nav-item nav-dropdown" id="teachersDropdown">
                 <a class="nav-link" href="#" onclick="toggleDropdown(event, 'teachersDropdown')">
                     <i class="fas fa-chalkboard-user"></i>
@@ -488,25 +493,27 @@
                     </a>
                 </div>
             </li>
+
+            <!-- Classes Dropdown -->
             <li class="nav-item nav-dropdown" id="classesDropdown">
                 <a class="nav-link" href="#" onclick="toggleDropdown(event, 'classesDropdown')">
                     <i class="fas fa-chalkboard"></i>
                     <span class="nav-text">Classes</span>
                     <i class="fas fa-chevron-right dropdown-icon"></i>
                 </a>
-
                 <div class="nav-dropdown-menu">
                     <a class="nav-link" asp-controller="Class" asp-action="Index">
                         <i class="fas fa-list"></i>
                         <span class="nav-text">Class List</span>
                     </a>
-
                     <a class="nav-link" asp-controller="Class" asp-action="AddClass">
                         <i class="fas fa-plus"></i>
                         <span class="nav-text">Add Class</span>
                     </a>
                 </div>
             </li>
+
+            <!-- Academics Dropdown -->
             <li class="nav-item nav-dropdown" id="academicsDropdown">
                 <a class="nav-link" href="#" onclick="toggleDropdown(event, 'academicsDropdown')">
                     <i class="fas fa-book-open"></i>
@@ -514,17 +521,18 @@
                     <i class="fas fa-chevron-right dropdown-icon"></i>
                 </a>
                 <div class="nav-dropdown-menu">
-
-                    <a class="nav-link" asp-controller="Subjects" asp-action="Index">
-                        <i class="fas fa-flask"></i>
-                        <span class="nav-text">Subjects</span>
+                    <a class="nav-link" asp-controller="Exams" asp-action="Dashboard">
+                        <i class="fas fa-chart-line"></i>
+                        <span class="nav-text">Exam Dashboard</span>
                     </a>
                     <a class="nav-link" asp-controller="Exams" asp-action="Index">
-                        <i class="fas fa-file-alt"></i>
-                        <span class="nav-text">Exams</span>
+                        <i class="fas fa-list"></i>
+                        <span class="nav-text">Exam List</span>
                     </a>
                 </div>
             </li>
+
+            <!-- Attendance Dropdown -->
             <li class="nav-item nav-dropdown" id="attendanceDropdown">
                 <a class="nav-link" href="#" onclick="toggleDropdown(event, 'attendanceDropdown')">
                     <i class="fas fa-calendar-check"></i>
@@ -532,16 +540,26 @@
                     <i class="fas fa-chevron-right dropdown-icon"></i>
                 </a>
                 <div class="nav-dropdown-menu">
-                    <a class="nav-link" asp-controller="Attendance" asp-action="StudentAttendance">
-                        <i class="fas fa-user-plus"></i>
-                        <span class="nav-text">Student Attendance </span>
+                    <a class="nav-link" asp-controller="StudentAttendance" asp-action="StudentAttendance">
+                        <i class="fas fa-user-graduate"></i>
+                        <span class="nav-text">Student Attendance</span>
                     </a>
-                    <a class="nav-link" asp-controller="Teachers" asp-action="TeacherAttendance">
+                    <a class="nav-link" asp-controller="TeacherAttendance" asp-action="Index">
                         <i class="fas fa-chalkboard-user"></i>
                         <span class="nav-text">Teacher Attendance</span>
                     </a>
+                    <a class="nav-link" asp-controller="TeacherAttendance" asp-action="MonthlyReport">
+                        <i class="fas fa-chart-line"></i>
+                        <span class="nav-text">Monthly Report</span>
+                    </a>
+                    <a class="nav-link" asp-controller="TeacherAttendance" asp-action="SalaryCalculation">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span class="nav-text">Salary Calculation</span>
+                    </a>
                 </div>
             </li>
+
+            <!-- Fees Dropdown -->
             <li class="nav-item nav-dropdown" id="feesDropdown">
                 <a class="nav-link" href="#" onclick="toggleDropdown(event, 'feesDropdown')">
                     <i class="fas fa-hand-holding-usd"></i>
@@ -559,11 +577,12 @@
                     </a>
                     <a class="nav-link" asp-controller="Fees" asp-action="Reports">
                         <i class="fas fa-chart-line"></i>
-                        <span class="nav-text">Reports</span>
+                        <span class="nav-text">Fee Reports</span>
                     </a>
                 </div>
             </li>
 
+            <!-- Reports -->
             <li class="nav-item">
                 <a class="nav-link" asp-controller="Reports" asp-action="Index">
                     <i class="fas fa-chart-bar"></i>
@@ -572,15 +591,18 @@
                 </a>
             </li>
 
-            <li class="nav-item nav-dropdown" id="settingsDropdown">
-                <a class="nav-link" href="#" onclick="toggleDropdown(event, 'settingsDropdown')">
-                    <i class="fas fa-cog"></i>
-                    <span class="nav-text">Settings</span>
+            <!-- User Management Dropdown (Admin only) -->
+            <li class="nav-item nav-dropdown" id="userManagementDropdown">
+                <a class="nav-link" href="#" onclick="toggleDropdown(event, 'userManagementDropdown')">
+                    <i class="fas fa-users-gear"></i>
+                    <span class="nav-text">User Management</span>
                     <i class="fas fa-chevron-right dropdown-icon"></i>
                 </a>
-
                 <div class="nav-dropdown-menu">
-                    <!-- Add User -->
+                    <a class="nav-link" asp-controller="UserManagement" asp-action="Add">
+                        <i class="fas fa-list"></i>
+                        <span class="nav-text">All Users</span>
+                    </a>
                     <a class="nav-link" asp-controller="Account" asp-action="AddUser">
                         <i class="fas fa-user-plus"></i>
                         <span class="nav-text">Add User</span>
@@ -590,7 +612,7 @@
 
             <hr style="background: rgba(255,255,255,0.1); margin: 1rem 0.5rem;">
 
-            <!-- LOGOUT BUTTON - FIXED: Changed from GET link to POST form -->
+            <!-- Logout Button -->
             <li class="nav-item">
                 <form asp-controller="Account" asp-action="Logout" method="post" class="logout-form">
                     @Html.AntiForgeryToken()
@@ -614,9 +636,9 @@
             </button>
             <div class="search-bar">
                 <div class="input-group">
-                        <span class="input-group-text bg-transparent border-end-0">
-                            <i class="fas fa-search"></i>
-                        </span>
+                    <span class="input-group-text bg-transparent border-end-0">
+                        <i class="fas fa-search"></i>
+                    </span>
                     <input type="text" class="form-control border-start-0" placeholder="Search...">
                 </div>
             </div>
@@ -654,14 +676,6 @@
                     <i class="fas fa-chevron-down ms-2"></i>
                 </div>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">
-                            <i class="fas fa-user me-2"></i> Profile
-                        </a></li>
-                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Settings">
-                            <i class="fas fa-cog me-2"></i> Settings
-                        </a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <!-- DROPDOWN LOGOUT - FIXED: Changed from link to form -->
                     <li>
                         <form asp-controller="Account" asp-action="Logout" method="post">
                             @Html.AntiForgeryToken()

@@ -1,0 +1,116 @@
+@model SmartTuitionManagementSystem.Models.DailyTeacherAttendanceViewModel
+
+@{
+    ViewData["Title"] = "Teacher Attendance";
+}
+
+<div class="container-fluid mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Teacher Attendance</h3>
+        </div>
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i> @Model.SuccessMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i> @Model.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <form method="get" asp-action="Index" class="mb-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Select Date</label>
+                        <input type="date" name="date" value="@Model.SelectedDate.ToString("yyyy-MM-dd")" class="form-control" />
+                    </div>
+                    <div class="col-md-2 align-self-end">
+                        <button type="submit" class="btn btn-primary">Load</button>
+                    </div>
+                </div>
+            </form>
+            
+            @if (Model.Teachers != null && Model.Teachers.Any())
+            {
+                <form method="post" asp-action="MarkBulkAttendance">
+                    <input type="hidden" name="SelectedDate" value="@Model.SelectedDate.ToString("yyyy-MM-dd")" />
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Teacher</th>
+                                    <th>Status</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Teachers.Count; i++)
+                                {
+                                    var teacher = Model.Teachers[i];
+                                    <tr>
+                                        <td>
+                                            @teacher.TeacherName
+                                            <input type="hidden" name="Teachers[@i].TeacherId" value="@teacher.TeacherId" />
+                                            <input type="hidden" name="Teachers[@i].AttendanceId" value="@teacher.AttendanceId" />
+                                        </td>
+                                        <td>
+                                            <select name="Teachers[@i].Status" class="form-select">
+                                                <option value="Present" selected="@(teacher.Status == "Present")">Present</option>
+                                                <option value="Absent" selected="@(teacher.Status == "Absent")">Absent</option>
+                                                <option value="Late" selected="@(teacher.Status == "Late")">Late</option>
+                                                <option value="HalfDay" selected="@(teacher.Status == "HalfDay")">Half Day</option>
+                                                <option value="Leave" selected="@(teacher.Status == "Leave")">Leave</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="time" name="Teachers[@i].CheckInTime" class="form-control" value="@teacher.CheckInTime" />
+                                        </td>
+                                        <td>
+                                            <input type="time" name="Teachers[@i].CheckOutTime" class="form-control" value="@teacher.CheckOutTime" />
+                                        </td>
+                                        <td>
+                                            <input type="text" name="Teachers[@i].Remarks" class="form-control" value="@teacher.Remarks" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save me-2"></i> Save All Attendance
+                        </button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-chalkboard-user fa-5x text-muted"></i>
+                    </div>
+                    <h3 class="text-muted">No Teachers Found</h3>
+                    <p class="text-muted mb-4">
+                        You haven't added any teachers yet.<br />
+                        Please add teachers before marking attendance.
+                    </p>
+                    <a asp-controller="Teachers" asp-action="AddTeacher" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-plus me-2"></i> Add Teacher
+                    </a>
+                    <a asp-controller="Teachers" asp-action="TeacherList" class="btn btn-outline-secondary btn-lg ms-2">
+                        <i class="fas fa-list me-2"></i> View Teacher List
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

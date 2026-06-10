@@ -6,7 +6,7 @@ using SmartTuitionManagementSystem.Services.Interface;
 
 namespace SmartTuitionManagementSystem.Controllers;
 
-public class AttendanceController(IAttendanceService attendanceService) : Controller
+public class StudentAttendanceController(IAttendanceService attendanceService) : Controller
 {
     // GET: Attendance/StudentAttendance
     public async Task<IActionResult> StudentAttendance(string? grade, DateTime? date)

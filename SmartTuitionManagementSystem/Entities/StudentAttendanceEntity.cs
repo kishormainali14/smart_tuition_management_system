@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SmartTuitionManagementSystem.Entities;
 
 [Table("Attendance")]  // Note: Your table is named "Attendance" (singular)
-public class AttendanceEntity
+public class StudentAttendanceEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -1,0 +1,95 @@
+@model SmartTuitionManagementSystem.Models.MonthlyReportViewModel
+
+@{
+    ViewData["Title"] = "Monthly Report";
+}
+
+<div class="container-fluid mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0">Monthly Attendance Report - @Model.MonthName</h3>
+        </div>
+        <div class="card-body">
+            <form method="get" class="mb-4">
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Year</label>
+                        <select name="year" class="form-control" asp-items="Model.YearOptions"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <label>Month</label>
+                        <select name="month" class="form-control" asp-items="Model.MonthOptions"></select>
+                    </div>
+                    <div class="col-md-2 align-self-end">
+                        <button type="submit" class="btn btn-primary">Generate</button>
+                    </div>
+                    <div class="col-md-2 align-self-end">
+                        <a asp-action="ExportMonthlyReport" asp-route-year="@Model.SelectedYear" asp-route-month="@Model.SelectedMonth" class="btn btn-success">Export to Excel</a>
+                    </div>
+                </div>
+            </form>
+            
+            @if (Model.Summaries != null && Model.Summaries.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Teacher Name</th>
+                                <th>Base Salary</th>
+                                <th>Present</th>
+                                <th>Absent</th>
+                                <th>Late</th>
+                                <th>Half Day</th>
+                                <th>Leave</th>
+                                <th>Attendance %</th>
+                                <th>Earned Salary</th>
+                                <th>Deductions</th>
+                                <th>Net Salary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Summaries)
+                            {
+                                <tr>
+                                    <td>@item.TeacherName</td>
+                                    <td>@item.BaseSalary.ToString("C")</td>
+                                    <td class="text-center">@item.PresentDays</td>
+                                    <td class="text-center">@item.AbsentDays</td>
+                                    <td class="text-center">@item.LateDays</td>
+                                    <td class="text-center">@item.HalfDays</td>
+                                    <td class="text-center">@item.LeaveDays</td>
+                                    <td class="text-center">@item.AttendancePercentage.ToString("F1")%</td>
+                                    <td>@item.EarnedSalary.ToString("C")</td>
+                                    <td>@item.Deductions.ToString("C")</td>
+                                    <td><strong>@item.NetSalary.ToString("C")</strong></td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-secondary">
+                            <tr>
+                                <th>Totals:</th>
+                                <th></th>
+                                <th>@Model.TotalPresent</th>
+                                <th>@Model.TotalAbsent</th>
+                                <th>@Model.TotalLate</th>
+                                <th>@Model.TotalHalfDay</th>
+                                <th>@Model.TotalLeave</th>
+                                <th></th>
+                                <th>@Model.TotalEarnedSalary.ToString("C")</th>
+                                <th>@Model.TotalDeductions.ToString("C")</th>
+                                <th>@Model.TotalNetSalary.ToString("C")</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No attendance data found for the selected period.
+                </div>
+            }
+        </div>
+    </div>
+</div>
