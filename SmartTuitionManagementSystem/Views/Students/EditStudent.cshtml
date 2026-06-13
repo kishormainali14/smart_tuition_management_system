@@ -29,6 +29,12 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
+                                <label asp-for="RollNumber" class="form-label fw-bold"></label>
+                                <input asp-for="RollNumber" class="form-control" />
+                                <span asp-validation-for="RollNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
                                 <label asp-for="Email" class="form-label fw-bold"></label>
                                 <input asp-for="Email" class="form-control" type="email" />
                                 <span asp-validation-for="Email" class="text-danger"></span>
@@ -40,13 +46,13 @@
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
 
-                            <!-- Updated Grade Dropdown Field for Edit -->
+                            <!-- Class -->
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Grade" class="form-label fw-bold"></label>
-                                <select asp-for="Grade" class="form-select" asp-items="Model.GradeOptions">
-                                    <option value="">Select Grade</option>
+                                <label asp-for="ClassId" class="form-label fw-bold"></label>
+                                <select asp-for="ClassId" class="form-select" asp-items="Model.ClassList">
+                                    <option value="">Select Class</option>
                                 </select>
-                                <span asp-validation-for="Grade" class="text-danger"></span>
+                                <span asp-validation-for="ClassId" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">

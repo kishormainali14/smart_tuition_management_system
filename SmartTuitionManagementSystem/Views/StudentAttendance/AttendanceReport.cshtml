@@ -1,0 +1,108 @@
+@model SmartTuitionManagementSystem.Models.AttendanceReportViewModel
+
+@{
+    ViewData["Title"] = "Attendance Report";
+}
+
+<div class="container-fluid mt-4">
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="fas fa-chart-bar"></i> Attendance Report</h4>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="AttendanceReport" class="row g-3">
+                <div class="col-md-3">
+                    <label asp-for="SelectedClassId" class="form-label"></label>
+                    <select asp-for="SelectedClassId" asp-items="Model.ClassList" class="form-select">
+                        <option value="">-- All Classes --</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="FromDate" class="form-label"></label>
+                    <input asp-for="FromDate" type="date" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="ToDate" class="form-label"></label>
+                    <input asp-for="ToDate" type="date" class="form-control" />
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter"></i> Generate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.Rows.Any())
+    {
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped" id="reportTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Student Name</th>
+                                <th>Roll Number</th>
+                                <th>Class</th>
+                                <th>Total Present</th>
+                                <th>Total Absent</th>
+                                <th>Total Leave</th>
+                                <th>Attendance %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int index = 1;
+                            }
+                            @foreach (var row in Model.Rows)
+                            {
+                                <tr>
+                                    <td>@(index++)</td>
+                                    <td>@row.StudentName</td>
+                                    <td>@row.RollNumber</td>
+                                    <td>@row.ClassName</td>
+                                    <td class="text-center text-success fw-bold">@row.TotalPresent</td>
+                                    <td class="text-center text-danger fw-bold">@row.TotalAbsent</td>
+                                    <td class="text-center text-warning fw-bold">@row.TotalLeave</td>
+                                    <td class="text-center fw-bold">@row.AttendancePercentage%</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-secondary">
+                            <tr>
+                                <th colspan="4" class="text-end">Totals:</th>
+                                <th class="text-center">@Model.Rows.Sum(r => r.TotalPresent)</th>
+                                <th class="text-center">@Model.Rows.Sum(r => r.TotalAbsent)</th>
+                                <th class="text-center">@Model.Rows.Sum(r => r.TotalLeave)</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle fa-2x"></i>
+            <h5>No data found</h5>
+            <p>Select filters and click "Generate" to view the attendance report.</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#reportTable').DataTable({
+                paging: true,
+                pageLength: 25,
+                ordering: true,
+                responsive: true
+            });
+        });
+    </script>
+}

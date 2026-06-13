@@ -64,7 +64,7 @@
                                     <td>@teacher.PhoneNumber</td>
                                     <td>@teacher.Qualification</td>
                                     <td>@teacher.ExperienceYears yrs</td>
-                                    <td>$@teacher.Salary.ToString("N0")</td>
+                                    <td>@teacher.Salary.ToString("C0")</td>
                                     <td>
                                         <a asp-action="EditTeacher" asp-route-id="@teacher.Id" class="btn btn-sm btn-warning">
                                             <i class="fas fa-edit"></i>

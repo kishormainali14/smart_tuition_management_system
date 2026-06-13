@@ -30,24 +30,46 @@ public class HomeController : Controller
 
         try
         {
-            // Get real-time counts from database
             var studentCount = await _context.Students.CountAsync();
             var teacherCount = await _context.Teachers.CountAsync(t => t.IsActive);
             var classCount = await _context.Classes.CountAsync();
-            
-            // Get monthly revenue (if Fees table exists, otherwise 0)
-            var monthlyRevenue = await GetMonthlyRevenueAsync();
-            
-            // Get recent activities
-            var recentActivities = await GetRecentActivitiesAsync();
 
-            // Get monthly revenue data for chart (last 12 months)
-            var monthlyRevenueData = await GetMonthlyRevenueDataAsync();
+            decimal totalFeesCollected = 0, todayFeesCollected = 0, monthlyRevenue = 0;
+            decimal[] monthlyRevenueData = new decimal[12];
 
-            // Set ViewBag data
+            try
+            {
+                totalFeesCollected = await _context.PaymentTransactions
+                    .Where(t => !t.IsCancelled)
+                    .SumAsync(t => (decimal?)t.AmountPaid) ?? 0;
+
+                todayFeesCollected = await _context.PaymentTransactions
+                    .Where(t => !t.IsCancelled && t.PaymentDate.Date == DateTime.Today)
+                    .SumAsync(t => (decimal?)t.AmountPaid) ?? 0;
+
+                monthlyRevenue = await GetMonthlyRevenueAsync();
+                monthlyRevenueData = await GetMonthlyRevenueDataAsync();
+            }
+            catch (Exception innerEx)
+            {
+                _logger.LogWarning(innerEx, "Fee tables not available yet");
+            }
+
+            List<ActivityViewModel> recentActivities;
+            try
+            {
+                recentActivities = await GetRecentActivitiesAsync();
+            }
+            catch
+            {
+                recentActivities = new List<ActivityViewModel>();
+            }
+
             ViewBag.StudentCount = studentCount;
             ViewBag.TeacherCount = teacherCount;
             ViewBag.ClassCount = classCount;
+            ViewBag.TotalFeesCollected = totalFeesCollected;
+            ViewBag.TodayFeesCollected = todayFeesCollected;
             ViewBag.MonthlyRevenue = monthlyRevenue;
             ViewBag.RecentActivities = recentActivities;
             ViewBag.MonthlyRevenueData = monthlyRevenueData;
@@ -63,6 +85,8 @@ public class HomeController : Controller
             ViewBag.TeacherCount = 0;
             ViewBag.ClassCount = 0;
             ViewBag.MonthlyRevenue = 0;
+            ViewBag.TotalFeesCollected = 0;
+            ViewBag.TodayFeesCollected = 0;
             ViewBag.RecentActivities = new List<ActivityViewModel>();
             ViewBag.MonthlyRevenueData = new decimal[12];
             return View();
@@ -71,15 +95,11 @@ public class HomeController : Controller
 
     private async Task<decimal> GetMonthlyRevenueAsync()
     {
-        // If you have a Fees table, use this:
-        // var currentMonth = DateTime.Now.Month;
-        // var currentYear = DateTime.Now.Year;
-        // return await _context.Fees
-        //     .Where(f => f.PaymentDate.Month == currentMonth && f.PaymentDate.Year == currentYear)
-        //     .SumAsync(f => f.Amount);
-        
-        // Placeholder - replace with actual data when Fees table is ready
-        return 0;
+        var currentMonth = DateTime.Now.Month;
+        var currentYear = DateTime.Now.Year;
+        return await _context.PaymentTransactions
+            .Where(t => !t.IsCancelled && t.PaymentDate.Month == currentMonth && t.PaymentDate.Year == currentYear)
+            .SumAsync(t => (decimal?)t.AmountPaid) ?? 0;
     }
 
     private async Task<List<ActivityViewModel>> GetRecentActivitiesAsync()
@@ -97,7 +117,7 @@ public class HomeController : Controller
                     Icon = "fa-user-graduate",
                     IconColor = "success",
                     Title = "New Student Added",
-                    Description = $"{s.FullName} was added to {s.Grade}",
+                    Description = $"{s.FullName} was added as student",
                     Time = s.CreatedAt,
                     TimeAgo = GetTimeAgo(s.CreatedAt)
                 })
@@ -152,21 +172,13 @@ public class HomeController : Controller
     private async Task<decimal[]> GetMonthlyRevenueDataAsync()
     {
         var monthlyData = new decimal[12];
+        var currentYear = DateTime.Now.Year;
         
-        // If you have a Fees table, use this:
-        // var currentYear = DateTime.Now.Year;
-        // for (int i = 1; i <= 12; i++)
-        // {
-        //     monthlyData[i - 1] = await _context.Fees
-        //         .Where(f => f.PaymentDate.Year == currentYear && f.PaymentDate.Month == i)
-        //         .SumAsync(f => f.Amount);
-        // }
-        
-        // Placeholder with sample data - replace when Fees table is ready
-        var random = new Random();
-        for (int i = 0; i < 12; i++)
+        for (int i = 1; i <= 12; i++)
         {
-            monthlyData[i] = random.Next(5000, 20000);
+            monthlyData[i - 1] = await _context.PaymentTransactions
+                .Where(t => !t.IsCancelled && t.PaymentDate.Year == currentYear && t.PaymentDate.Month == i)
+                .SumAsync(t => (decimal?)t.AmountPaid) ?? 0;
         }
         
         return monthlyData;

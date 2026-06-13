@@ -1,0 +1,207 @@
+@model List<FeeCollectionViewModel>
+@{
+    ViewData["Title"] = "Fee Collections";
+    var classList = ViewBag.ClassList as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+    var selectedClassId = ViewBag.SelectedClassId as int?;
+    var selectedStudentId = ViewBag.SelectedStudentId as int?;
+    var selectedStatus = ViewBag.SelectedStatus as string;
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Fee Collections</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Fee Collections</li>
+    </ol>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Filter Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i> Filter Collections
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Class</label>
+                    <select name="classId" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Classes</option>
+                        @foreach (var c in classList)
+                        {
+                            <option value="@c.Value" selected="@(c.Value == selectedClassId?.ToString())">@c.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Status</option>
+                        <option value="Pending" selected="@(selectedStatus == "Pending")">Pending</option>
+                        <option value="Partial" selected="@(selectedStatus == "Partial")">Partial</option>
+                        <option value="Paid" selected="@(selectedStatus == "Paid")">Paid</option>
+                        <option value="Overdue" selected="@(selectedStatus == "Overdue")">Overdue</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <a asp-action="Collections" class="btn btn-secondary w-100">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Generate Collection Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-plus-circle me-1"></i> Generate Fee Collection
+        </div>
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Class</label>
+                    <select id="genClassId" class="form-select">
+                        <option value="">-- Select --</option>
+                        @foreach (var c in classList)
+                        {
+                            <option value="@c.Value">@c.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Student</label>
+                    <select id="genStudentId" class="form-select">
+                        <option value="">-- Select (optional for bulk) --</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Fee Structure</label>
+                    <select id="genFeeStructureId" class="form-select">
+                        <option value="">-- Select --</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" onclick="generateCollection()">
+                        <i class="fas fa-plus"></i> Generate
+                    </button>
+                    <button class="btn btn-info w-100 mt-1" onclick="generateBulkCollection()">
+                        <i class="fas fa-users"></i> Bulk Generate (All Students)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collections Table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-receipt me-1"></i> Collections (@Model.Count)
+        </div>
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No fee collections found.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="collectionsTable">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Roll No</th>
+                                <th>Class</th>
+                                <th>Fee Type</th>
+                                <th>Total</th>
+                                <th>Paid</th>
+                                <th>Balance</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.StudentName</td>
+                                    <td>@item.RollNumber</td>
+                                    <td>@item.ClassName</td>
+                                    <td>@item.FeeTypeName</td>
+                                    <td>@item.TotalAmount.ToString("C")</td>
+                                    <td>@item.PaidAmount.ToString("C")</td>
+                                    <td>@item.RemainingBalance.ToString("C")</td>
+                                    <td>@item.DueDate.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <span class="badge @(item.Status == "Paid" ? "bg-success" : item.Status == "Partial" ? "bg-warning" : item.Status == "Overdue" ? "bg-danger" : "bg-secondary")">
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.RemainingBalance > 0)
+                                        {
+                                            <a asp-action="Payment" asp-route-collectionId="@item.Id" class="btn btn-sm btn-success">
+                                                <i class="fas fa-money-bill"></i> Pay
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#genClassId').change(function() {
+            var classId = $(this).val();
+            if (classId) {
+                $.getJSON('@Url.Action("GetStudentsByClass", "Fees")', { classId })
+                    .done(function(data) {
+                        var studentSelect = $('#genStudentId');
+                        studentSelect.empty().append('<option value="">-- Select --</option>');
+                        $.each(data, function(i, s) { studentSelect.append('<option value="' + s.value + '">' + s.text + '</option>'); });
+                    });
+                $.getJSON('@Url.Action("GetFeeStructuresByClass", "Fees")', { classId })
+                    .done(function(data) {
+                        var fsSelect = $('#genFeeStructureId');
+                        fsSelect.empty().append('<option value="">-- Select --</option>');
+                        $.each(data, function(i, s) { fsSelect.append('<option value="' + s.value + '">' + s.text + '</option>'); });
+                    });
+            }
+        });
+
+        function generateCollection() {
+            var studentId = $('#genStudentId').val();
+            var feeStructureId = $('#genFeeStructureId').val();
+            if (!studentId || !feeStructureId) { alert('Please select student and fee structure'); return; }
+            $.post('@Url.Action("GenerateCollection", "Fees")', {
+                studentId, feeStructureId,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            }).done(function(r) { alert(r.message); if (r.success) location.reload(); });
+        }
+
+        function generateBulkCollection() {
+            var classId = $('#genClassId').val();
+            var feeStructureId = $('#genFeeStructureId').val();
+            if (!classId || !feeStructureId) { alert('Please select class and fee structure'); return; }
+            if (!confirm('Generate fee collections for all students in this class?')) return;
+            $.post('@Url.Action("GenerateBulkCollection", "Fees")', {
+                classId, feeStructureId,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            }).done(function(r) { alert(r.message); if (r.success) location.reload(); });
+        }
+    </script>
+}

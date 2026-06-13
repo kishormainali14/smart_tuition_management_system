@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SmartTuitionManagementSystem.Data;
@@ -11,9 +12,11 @@ using SmartTuitionManagementSystem.Data;
 namespace SmartTuitionManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260611020534_AddRollNumberToStudents")]
+    partial class AddRollNumberToStudents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,202 +140,6 @@ namespace SmartTuitionManagementSystem.Migrations
                     b.ToTable("Exams");
                 });
 
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.FeeCollectionEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("FeeStructureId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal>("PaidAmount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("RemainingBalance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Remarks")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasDefaultValue("Pending");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FeeStructureId");
-
-                    b.HasIndex("StudentId", "FeeStructureId")
-                        .IsUnique();
-
-                    b.ToTable("FeeCollections", (string)null);
-                });
-
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.FeeStructureEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ClassId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("FeeTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FeeTypeId");
-
-                    b.HasIndex("ClassId", "FeeTypeId")
-                        .IsUnique();
-
-                    b.ToTable("FeeStructures", (string)null);
-                });
-
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.FeeTypeEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("FeeTypeName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FeeTypes", (string)null);
-                });
-
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.PaymentTransactionEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("AmountPaid")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("CancelledAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CancelledBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<int>("FeeCollectionId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsCancelled")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Remarks")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("TransactionReference")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FeeCollectionId");
-
-                    b.HasIndex("PaymentDate");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("PaymentTransactions", (string)null);
-                });
-
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.StudentAttendanceEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -408,6 +215,11 @@ namespace SmartTuitionManagementSystem.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Grade")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -569,6 +381,81 @@ namespace SmartTuitionManagementSystem.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
+            modelBuilder.Entity("SmartTuitionManagementSystem.Models.Teacher", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("ExperienceYears")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("HireDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<decimal>("PerDayRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Qualification")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Specialization")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Teacher");
+                });
+
             modelBuilder.Entity("SmartTuitionManagementSystem.Models.TeacherAttendance", b =>
                 {
                     b.Property<int>("Id")
@@ -667,63 +554,6 @@ namespace SmartTuitionManagementSystem.Migrations
                     b.Navigation("ClassTeacher");
                 });
 
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.FeeCollectionEntity", b =>
-                {
-                    b.HasOne("SmartTuitionManagementSystem.Entities.FeeStructureEntity", "FeeStructure")
-                        .WithMany("FeeCollections")
-                        .HasForeignKey("FeeStructureId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SmartTuitionManagementSystem.Entities.StudentEntity", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("FeeStructure");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.FeeStructureEntity", b =>
-                {
-                    b.HasOne("SmartTuitionManagementSystem.Entities.ClassEntity", "Class")
-                        .WithMany()
-                        .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SmartTuitionManagementSystem.Entities.FeeTypeEntity", "FeeType")
-                        .WithMany("FeeStructures")
-                        .HasForeignKey("FeeTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Class");
-
-                    b.Navigation("FeeType");
-                });
-
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.PaymentTransactionEntity", b =>
-                {
-                    b.HasOne("SmartTuitionManagementSystem.Entities.FeeCollectionEntity", "FeeCollection")
-                        .WithMany("PaymentTransactions")
-                        .HasForeignKey("FeeCollectionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SmartTuitionManagementSystem.Entities.StudentEntity", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("FeeCollection");
-
-                    b.Navigation("Student");
-                });
-
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.StudentAttendanceEntity", b =>
                 {
                     b.HasOne("SmartTuitionManagementSystem.Entities.StudentEntity", "Student")
@@ -748,7 +578,7 @@ namespace SmartTuitionManagementSystem.Migrations
 
             modelBuilder.Entity("SmartTuitionManagementSystem.Models.TeacherAttendance", b =>
                 {
-                    b.HasOne("SmartTuitionManagementSystem.Entities.TeacherEntity", "Teacher")
+                    b.HasOne("SmartTuitionManagementSystem.Models.Teacher", "Teacher")
                         .WithMany("Attendances")
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -762,27 +592,12 @@ namespace SmartTuitionManagementSystem.Migrations
                     b.Navigation("Students");
                 });
 
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.FeeCollectionEntity", b =>
-                {
-                    b.Navigation("PaymentTransactions");
-                });
-
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.FeeStructureEntity", b =>
-                {
-                    b.Navigation("FeeCollections");
-                });
-
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.FeeTypeEntity", b =>
-                {
-                    b.Navigation("FeeStructures");
-                });
-
             modelBuilder.Entity("SmartTuitionManagementSystem.Entities.StudentEntity", b =>
                 {
                     b.Navigation("Attendances");
                 });
 
-            modelBuilder.Entity("SmartTuitionManagementSystem.Entities.TeacherEntity", b =>
+            modelBuilder.Entity("SmartTuitionManagementSystem.Models.Teacher", b =>
                 {
                     b.Navigation("Attendances");
                 });

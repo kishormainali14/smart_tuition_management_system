@@ -30,5 +30,5 @@ public class StudentAttendanceEntity
     public int? MarkedBy { get; set; } // UserId who marked
     
     [ForeignKey("StudentId")]
-    public virtual StudentEntity Student { get; set; } = new StudentEntity(); // ✅ FIXED: Initialized
+    public virtual StudentEntity? Student { get; set; }
 }

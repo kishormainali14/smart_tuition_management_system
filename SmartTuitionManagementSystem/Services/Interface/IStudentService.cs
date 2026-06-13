@@ -11,4 +11,5 @@ public interface IStudentService
     Task<(bool Success, string Message)> UpdateStudentAsync(int id, StudentViewModel model);
     Task<(bool Success, string Message)> DeleteStudentAsync(int id);
     Task<bool> IsEmailExistsAsync(string email, int? excludeId = null);
+    Task<bool> IsRollNumberExistsAsync(string rollNumber, int classId, int? excludeId = null);
 }

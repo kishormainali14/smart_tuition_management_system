@@ -9,11 +9,13 @@ public class StudentsController : Controller
 {
     private readonly ILogger<StudentsController> _logger;
     private readonly IStudentService _studentService;
+    private readonly IClassService _classService;
 
-    public StudentsController(ILogger<StudentsController> logger, IStudentService studentService)
+    public StudentsController(ILogger<StudentsController> logger, IStudentService studentService, IClassService classService)
     {
         _logger = logger;
         _studentService = studentService;
+        _classService = classService;
     }
 
     // Helper method to check authentication
@@ -31,7 +33,7 @@ public class StudentsController : Controller
 
     // GET: Students/AddStudent
     [HttpGet]
-    public IActionResult AddStudent()
+    public async Task<IActionResult> AddStudent()
     {
         try
         {
@@ -40,7 +42,7 @@ public class StudentsController : Controller
 
             var model = new StudentViewModel
             {
-                GradeOptions = GetGradeClassOptions(),
+                ClassList = await GetClassListAsync(),
                 EnrollmentDate = DateTime.Now,
                 IsActive = true
             };
@@ -66,7 +68,6 @@ public class StudentsController : Controller
                 return RedirectToLogin();
 
             // Remove unnecessary validation for fields that aren't in the form
-            ModelState.Remove("GradeOptions");
             ModelState.Remove("EnrollmentDate");
             ModelState.Remove("IsActive");
 
@@ -78,7 +79,7 @@ public class StudentsController : Controller
             {
                 _logger.LogWarning("Model validation failed for student addition");
                 
-                model.GradeOptions = GetGradeClassOptions();
+                model.ClassList = await GetClassListAsync();
                 return View(model);
             }
 
@@ -86,7 +87,7 @@ public class StudentsController : Controller
             if (model.DateOfBirth.HasValue && model.DateOfBirth.Value > DateTime.Now.AddYears(-3))
             {
                 ModelState.AddModelError("DateOfBirth", "Student must be at least 3 years old");
-                model.GradeOptions = GetGradeClassOptions();
+                model.ClassList = await GetClassListAsync();
                 return View(model);
             }
 
@@ -103,14 +104,14 @@ public class StudentsController : Controller
 
             _logger.LogWarning("Failed to add student: {Message}", result.Message);
             ModelState.AddModelError("", result.Message);
-            model.GradeOptions = GetGradeClassOptions();
+            model.ClassList = await GetClassListAsync();
             return View(model);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error adding student. Email: {Email}", model.Email);
             TempData["ErrorMessage"] = "An unexpected error occurred. Please try again.";
-            model.GradeOptions = GetGradeClassOptions();
+            model.ClassList = await GetClassListAsync();
             return View(model);
         }
     }
@@ -136,7 +137,7 @@ public class StudentsController : Controller
                     s.FullName.ToLower().Contains(searchTerm) ||
                     s.Email.ToLower().Contains(searchTerm) ||
                     s.PhoneNumber.Contains(searchTerm) ||
-                    s.Grade.ToLower().Contains(searchTerm) ||
+                    (s.ClassName != null && s.ClassName.ToLower().Contains(searchTerm)) ||
                     (s.ParentName != null && s.ParentName.ToLower().Contains(searchTerm))).ToList();
             }
             
@@ -176,7 +177,7 @@ public class StudentsController : Controller
                 return RedirectToAction(nameof(StudentList));
             }
 
-            student.GradeOptions = GetGradeClassOptions();
+            student.ClassList = await GetClassListAsync();
             return View(student);
         }
         catch (Exception ex)
@@ -205,14 +206,13 @@ public class StudentsController : Controller
             }
 
             // Remove unnecessary validation
-            ModelState.Remove("GradeOptions");
             ModelState.Remove("EnrollmentDate");
             ModelState.Remove("IsActive");
 
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Model validation failed for student update. ID: {StudentId}", id);
-                model.GradeOptions = GetGradeClassOptions();
+                model.ClassList = await GetClassListAsync();
                 return View(model);
             }
 
@@ -220,7 +220,7 @@ public class StudentsController : Controller
             if (model.DateOfBirth.HasValue && model.DateOfBirth.Value > DateTime.Now.AddYears(-3))
             {
                 ModelState.AddModelError("DateOfBirth", "Student must be at least 3 years old");
-                model.GradeOptions = GetGradeClassOptions();
+                model.ClassList = await GetClassListAsync();
                 return View(model);
             }
 
@@ -235,14 +235,14 @@ public class StudentsController : Controller
 
             _logger.LogWarning("Failed to update student. ID: {StudentId}, Message: {Message}", id, result.Message);
             ModelState.AddModelError("", result.Message);
-            model.GradeOptions = GetGradeClassOptions();
+            model.ClassList = await GetClassListAsync();
             return View(model);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error updating student. ID: {StudentId}", id);
             TempData["ErrorMessage"] = "An unexpected error occurred. Please try again.";
-            model.GradeOptions = GetGradeClassOptions();
+            model.ClassList = await GetClassListAsync();
             return View(model);
         }
     }
@@ -337,11 +337,11 @@ public class StudentsController : Controller
 
             // Build CSV content
             var csv = new System.Text.StringBuilder();
-            csv.AppendLine("ID,Full Name,Email,Phone Number,Grade,Parent Name,Parent Phone,Address,Enrollment Date");
+            csv.AppendLine("ID,Full Name,Email,Phone Number,Class,Parent Name,Parent Phone,Address,Enrollment Date");
             
             foreach (var student in students)
             {
-                csv.AppendLine($"\"{student.Id}\",\"{student.FullName}\",\"{student.Email}\",\"{student.PhoneNumber}\",\"{student.Grade}\",\"{student.ParentName}\",\"{student.ParentPhone}\",\"{student.Address}\",\"{student.EnrollmentDate:yyyy-MM-dd}\"");
+                csv.AppendLine($"\"{student.Id}\",\"{student.FullName}\",\"{student.Email}\",\"{student.PhoneNumber}\",\"{student.ClassName}\",\"{student.ParentName}\",\"{student.ParentPhone}\",\"{student.Address}\",\"{student.EnrollmentDate:yyyy-MM-dd}\"");
             }
 
             var bytes = System.Text.Encoding.UTF8.GetBytes(csv.ToString());
@@ -364,27 +364,15 @@ public class StudentsController : Controller
         return RedirectToAction(nameof(StudentList));
     }
 
-    // Helper method to get grade/class options for dropdown
-    private IEnumerable<SelectListItem> GetGradeClassOptions()
+    // Helper method to get class list for dropdown
+    private async Task<IEnumerable<SelectListItem>> GetClassListAsync()
     {
-        return new List<SelectListItem>
+        var classes = await _classService.GetAllClassesAsync();
+        return classes.Select(c => new SelectListItem
         {
-            new SelectListItem { Value = "", Text = "-- Select Grade --", Disabled = true, Selected = true },
-            new SelectListItem { Value = "Nursery", Text = "Nursery" },
-            new SelectListItem { Value = "LKG", Text = "LKG" },
-            new SelectListItem { Value = "UKG", Text = "UKG" },
-            new SelectListItem { Value = "Class 1", Text = "Class 1" },
-            new SelectListItem { Value = "Class 2", Text = "Class 2" },
-            new SelectListItem { Value = "Class 3", Text = "Class 3" },
-            new SelectListItem { Value = "Class 4", Text = "Class 4" },
-            new SelectListItem { Value = "Class 5", Text = "Class 5" },
-            new SelectListItem { Value = "Class 6", Text = "Class 6" },
-            new SelectListItem { Value = "Class 7", Text = "Class 7" },
-            new SelectListItem { Value = "Class 8", Text = "Class 8" },
-            new SelectListItem { Value = "Class 9", Text = "Class 9" },
-            new SelectListItem { Value = "Class 10", Text = "Class 10" },
-            new SelectListItem { Value = "Class 11", Text = "Class 11" },
-            new SelectListItem { Value = "Class 12", Text = "Class 12" }
-        };
+            Value = c.Id.ToString(),
+            Text = c.FullClassName
+        });
     }
+
 }

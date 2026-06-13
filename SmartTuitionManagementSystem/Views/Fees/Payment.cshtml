@@ -1,0 +1,125 @@
+@model FeePaymentViewModel
+@{
+    ViewData["Title"] = "Make Payment";
+    var collection = ViewBag.Collection as FeeCollectionViewModel;
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Make Payment</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-action="Collections">Collections</a></li>
+        <li class="breadcrumb-item active">Make Payment</li>
+    </ol>
+
+    @if (collection != null)
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-info-circle me-1"></i> Fee Details
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Student:</strong> @collection.StudentName
+                    </div>
+                    <div class="col-md-2">
+                        <strong>Roll No:</strong> @collection.RollNumber
+                    </div>
+                    <div class="col-md-2">
+                        <strong>Class:</strong> @collection.ClassName
+                    </div>
+                    <div class="col-md-2">
+                        <strong>Fee Type:</strong> @collection.FeeTypeName
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Total Amount:</strong> @collection.TotalAmount.ToString("C")
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-3">
+                        <strong>Paid Amount:</strong> @collection.PaidAmount.ToString("C")
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Remaining Balance:</strong>
+                        <span class="text-danger fw-bold">@collection.RemainingBalance.ToString("C")</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Status:</strong>
+                        <span class="badge @(collection.Status == "Paid" ? "bg-success" : collection.Status == "Partial" ? "bg-warning" : "bg-secondary")">
+                            @collection.Status
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-money-bill-wave me-1"></i> Payment Details
+        </div>
+        <div class="card-body">
+            <form asp-action="Payment" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="FeeCollectionId" />
+                <input type="hidden" asp-for="StudentId" />
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                    </div>
+                }
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="AmountPaid" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rs</span>
+                            <input asp-for="AmountPaid" class="form-control" type="number" step="0.01"
+                                   min="0.01" max="@(collection?.RemainingBalance ?? 0)" />
+                        </div>
+                        <span asp-validation-for="AmountPaid" class="text-danger"></span>
+                        <small class="text-muted">Max: @(collection?.RemainingBalance.ToString("C") ?? "Rs 0.00")</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="PaymentDate" class="form-label"></label>
+                        <input asp-for="PaymentDate" class="form-control" type="date" />
+                        <span asp-validation-for="PaymentDate" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="PaymentMethod" class="form-label"></label>
+                        <select asp-for="PaymentMethod" asp-items="Model.PaymentMethodList" class="form-select"></select>
+                        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="TransactionReference" class="form-label"></label>
+                        <input asp-for="TransactionReference" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Remarks" class="form-label"></label>
+                    <textarea asp-for="Remarks" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-check"></i> Process Payment
+                    </button>
+                    <a asp-action="Collections" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

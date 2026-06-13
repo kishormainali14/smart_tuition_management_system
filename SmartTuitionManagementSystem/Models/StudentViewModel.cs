@@ -12,6 +12,10 @@ public class StudentViewModel
     [Display(Name = "Full Name")]
     public string FullName { get; set; } = string.Empty;
 
+    [MaxLength(20)]
+    [Display(Name = "Roll Number")]
+    public string RollNumber { get; set; } = string.Empty;
+
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email address")]
     [Display(Name = "Email Address")]
@@ -30,9 +34,9 @@ public class StudentViewModel
     [Display(Name = "Date of Birth")]
     public DateTime? DateOfBirth { get; set; }
 
-    [Required(ErrorMessage = "Grade/Class is required")]
-    [Display(Name = "Grade/Class")]
-    public string Grade { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Class is required")]
+    [Display(Name = "Class")]
+    public int ClassId { get; set; }
 
     [StringLength(100)]
     [Display(Name = "Parent/Guardian Name")]
@@ -54,6 +58,6 @@ public class StudentViewModel
     [Display(Name = "Class Name")]
     public string? ClassName { get; set; }
 
-    // Dropdown list for grades
-    public IEnumerable<SelectListItem> GradeOptions { get; set; } = new List<SelectListItem>();
+    // Dropdown lists
+    public IEnumerable<SelectListItem> ClassList { get; set; } = new List<SelectListItem>();
 }

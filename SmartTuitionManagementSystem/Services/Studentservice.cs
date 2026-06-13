@@ -49,21 +49,29 @@ public class StudentService : IStudentService
                 return (false, "A student with this email already exists", 0);
             }
 
+            // Check if roll number already exists in the same class
+            if (!string.IsNullOrWhiteSpace(model.RollNumber) && model.ClassId > 0 &&
+                await IsRollNumberExistsAsync(model.RollNumber, model.ClassId))
+            {
+                _logger.LogWarning("Roll number already exists: {RollNumber} in class {ClassId}", model.RollNumber, model.ClassId);
+                return (false, "This roll number already exists.", 0);
+            }
+
             var now = DateTime.UtcNow;
 
             // Create new student entity with UTC dates
             var student = new StudentEntity
             {
                 FullName = model.FullName.Trim(),
+                RollNumber = model.RollNumber?.Trim() ?? string.Empty,
                 Email = model.Email.Trim().ToLower(),
                 PhoneNumber = model.PhoneNumber?.Trim() ?? string.Empty,
                 Address = model.Address?.Trim() ?? string.Empty,
                 DateOfBirth = ToUtc(model.DateOfBirth),
-                Grade = model.Grade?.Trim() ?? string.Empty,
                 ParentName = model.ParentName?.Trim() ?? string.Empty,
                 ParentPhone = model.ParentPhone?.Trim() ?? string.Empty,
                 EnrollmentDate = now,
-                ClassId = 1, // TEMPORARY: Set default ClassId until dynamic dropdown is implemented
+                ClassId = model.ClassId,
                 IsActive = true,
                 CreatedAt = now,
                 UpdatedAt = null
@@ -103,11 +111,13 @@ public class StudentService : IStudentService
                 {
                     Id = s.Id,
                     FullName = s.FullName,
+                    RollNumber = s.RollNumber,
                     Email = s.Email,
                     PhoneNumber = s.PhoneNumber,
                     Address = s.Address,
                     DateOfBirth = s.DateOfBirth,
-                    Grade = s.Grade,
+                    ClassId = s.ClassId,
+                    ClassName = s.Class != null ? s.Class.ClassName : null,
                     ParentName = s.ParentName,
                     ParentPhone = s.ParentPhone,
                     EnrollmentDate = s.EnrollmentDate,
@@ -142,11 +152,13 @@ public class StudentService : IStudentService
                 {
                     Id = s.Id,
                     FullName = s.FullName,
+                    RollNumber = s.RollNumber,
                     Email = s.Email,
                     PhoneNumber = s.PhoneNumber,
                     Address = s.Address,
                     DateOfBirth = s.DateOfBirth,
-                    Grade = s.Grade,
+                    ClassId = s.ClassId,
+                    ClassName = s.Class != null ? s.Class.ClassName : null,
                     ParentName = s.ParentName,
                     ParentPhone = s.ParentPhone,
                     EnrollmentDate = s.EnrollmentDate,
@@ -193,13 +205,22 @@ public class StudentService : IStudentService
                 return (false, "Another student with this email already exists");
             }
 
+            // Check if roll number already exists in the same class (excluding current student)
+            if (!string.IsNullOrWhiteSpace(model.RollNumber) && model.ClassId > 0 &&
+                await IsRollNumberExistsAsync(model.RollNumber, model.ClassId, id))
+            {
+                _logger.LogWarning("Roll number already exists: {RollNumber} in class {ClassId}", model.RollNumber, model.ClassId);
+                return (false, "This roll number already exists.");
+            }
+
             // Update student details
             student.FullName = model.FullName.Trim();
+            student.RollNumber = model.RollNumber?.Trim() ?? string.Empty;
             student.Email = model.Email.Trim().ToLower();
             student.PhoneNumber = model.PhoneNumber?.Trim() ?? string.Empty;
             student.Address = model.Address?.Trim() ?? string.Empty;
             student.DateOfBirth = ToUtc(model.DateOfBirth);
-            student.Grade = model.Grade?.Trim() ?? string.Empty;
+            student.ClassId = model.ClassId;
             student.ParentName = model.ParentName?.Trim() ?? string.Empty;
             student.ParentPhone = model.ParentPhone?.Trim() ?? string.Empty;
             student.UpdatedAt = DateTime.UtcNow;
@@ -298,6 +319,37 @@ public class StudentService : IStudentService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error checking email existence: {Email}", email);
+            return false;
+        }
+    }
+
+    // Check if roll number exists in the same class
+    public async Task<bool> IsRollNumberExistsAsync(string rollNumber, int classId, int? excludeId = null)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(rollNumber) || classId <= 0)
+                return false;
+
+            var normalizedRollNumber = rollNumber.Trim();
+
+            if (excludeId.HasValue)
+            {
+                return await _context.Students.AnyAsync(s =>
+                    s.RollNumber == normalizedRollNumber &&
+                    s.ClassId == classId &&
+                    s.Id != excludeId.Value &&
+                    s.IsActive);
+            }
+
+            return await _context.Students.AnyAsync(s =>
+                s.RollNumber == normalizedRollNumber &&
+                s.ClassId == classId &&
+                s.IsActive);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error checking roll number existence: {RollNumber}", rollNumber);
             return false;
         }
     }

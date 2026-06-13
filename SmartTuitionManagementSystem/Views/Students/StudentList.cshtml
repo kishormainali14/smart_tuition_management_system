@@ -47,11 +47,11 @@ ViewData["Title"] = "Student List";
                     <thead class="table-light">
                     <tr>
                         <th>ID</th>
+                        <th>Roll Number</th>
                         <th>Full Name</th>
+                        <th>Class</th>
                         <th>Email</th>
                         <th>Phone</th>
-                        <th>Grade</th>
-                        <th>Parent Name</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -60,11 +60,11 @@ ViewData["Title"] = "Student List";
                     {
                     <tr>
                         <td>@student.Id</td>
+                        <td>@student.RollNumber</td>
                         <td>@student.FullName</td>
+                        <td>@student.ClassName</td>
                         <td>@student.Email</td>
                         <td>@student.PhoneNumber</td>
-                        <td>@student.Grade</td>
-                        <td>@student.ParentName</td>
                         <td>
                             <a asp-action="EditStudent" asp-controller="Students" asp-route-id="@student.Id" class="btn btn-sm btn-warning">
                                 <i class="fas fa-edit"></i> Edit

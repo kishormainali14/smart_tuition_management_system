@@ -12,7 +12,6 @@ namespace SmartTuitionManagementSystem.Models
         public string PhoneNumber { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public DateTime? DateOfBirth { get; set; }
-        public string Grade { get; set; } = string.Empty;
         public string ParentName { get; set; } = string.Empty;
         public string ParentPhone { get; set; } = string.Empty;
         public DateTime EnrollmentDate { get; set; }
@@ -25,7 +24,6 @@ namespace SmartTuitionManagementSystem.Models
         public int StudentId { get; set; }
         public string StudentName { get; set; } = string.Empty;
         public string RollNumber { get; set; } = string.Empty;
-        public string Grade { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public string Status { get; set; } = string.Empty;
         public string StatusText { get; set; } = string.Empty;
@@ -38,7 +36,6 @@ namespace SmartTuitionManagementSystem.Models
         public int StudentId { get; set; }
         public string StudentName { get; set; } = string.Empty;
         public string RollNumber { get; set; } = string.Empty;
-        public string Grade { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public string StatusText { get; set; } = string.Empty;
         public string CheckInTime { get; set; } = string.Empty;
@@ -68,7 +65,6 @@ namespace SmartTuitionManagementSystem.Models
         public int StudentId { get; set; }
         public string StudentName { get; set; } = string.Empty;
         public string RollNumber { get; set; } = string.Empty;
-        public string Grade { get; set; } = string.Empty;
         public int TotalDays { get; set; }
         public int Present { get; set; }
         public int Late { get; set; }

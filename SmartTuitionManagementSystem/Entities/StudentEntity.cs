@@ -15,6 +15,10 @@ public class StudentEntity
     [Display(Name = "Full Name")]
     public string FullName { get; set; } = string.Empty;
 
+    [MaxLength(20)]
+    [Display(Name = "Roll Number")]
+    public string RollNumber { get; set; } = string.Empty;
+
     [Required]
     [MaxLength(100)]
     [EmailAddress]
@@ -34,10 +38,6 @@ public class StudentEntity
     [DataType(DataType.Date)]
     [Display(Name = "Date of Birth")]
     public DateTime? DateOfBirth { get; set; }
-
-    [MaxLength(50)]
-    [Display(Name = "Grade/Class")]
-    public string Grade { get; set; } = string.Empty;
 
     [MaxLength(100)]
     [Display(Name = "Parent/Guardian Name")]

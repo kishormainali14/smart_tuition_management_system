@@ -1,0 +1,257 @@
+@model FeeReportViewModel
+@{
+    ViewData["Title"] = "Fee Reports";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Fee Reports</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Fee Reports</li>
+    </ol>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Filter Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i> Report Filters
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-2">
+                    <label asp-for="ReportType" class="form-label"></label>
+                    <select asp-for="ReportType" asp-items="Model.ReportTypeList" class="form-select" onchange="toggleFilters(this.value)"></select>
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="ClassId" class="form-label">Class</label>
+                    <select asp-for="ClassId" asp-items="Model.ClassList" class="form-select">
+                        <option value="">All Classes</option>
+                    </select>
+                </div>
+                <div class="col-md-2" id="studentFilter">
+                    <label asp-for="StudentId" class="form-label">Student</label>
+                    <select asp-for="StudentId" asp-items="Model.StudentList" class="form-select">
+                        <option value="">All Students</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="FromDate" class="form-label">From</label>
+                    <input asp-for="FromDate" class="form-control" type="date" />
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="ToDate" class="form-label">To</label>
+                    <input asp-for="ToDate" class="form-control" type="date" />
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Generate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    @if (Model.Collections.Any() || Model.Payments.Any())
+    {
+        <div class="row mb-4">
+            @if (Model.GrandTotalCollected > 0)
+            {
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Collected</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GrandTotalCollected.ToString("C")</div>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-rupee-sign fa-2x text-gray-300"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.GrandTotalDue > 0)
+            {
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Due</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GrandTotalDue.ToString("C")</div>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.GrandTotalRemaining > 0)
+            {
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-danger shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Outstanding</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GrandTotalRemaining.ToString("C")</div>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-clock fa-2x text-gray-300"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Collections Report Table -->
+    @if (Model.Collections.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-list me-1"></i> @Model.ReportType Report - Collections
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Roll No</th>
+                                <th>Class</th>
+                                <th>Fee Type</th>
+                                <th>Total</th>
+                                <th>Paid</th>
+                                <th>Balance</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Collections)
+                            {
+                                <tr>
+                                    <td>@item.StudentName</td>
+                                    <td>@item.RollNumber</td>
+                                    <td>@item.ClassName</td>
+                                    <td>@item.FeeTypeName</td>
+                                    <td>@item.TotalAmount.ToString("C")</td>
+                                    <td>@item.PaidAmount.ToString("C")</td>
+                                    <td>@item.RemainingBalance.ToString("C")</td>
+                                    <td>@item.DueDate.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <span class="badge @(item.Status == "Paid" ? "bg-success" : item.Status == "Partial" ? "bg-warning" : item.Status == "Overdue" ? "bg-danger" : "bg-secondary")">
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Payments Report Table -->
+    @if (Model.Payments.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-list me-1"></i> @Model.ReportType Report - Payments
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Receipt</th>
+                                <th>Student</th>
+                                <th>Class</th>
+                                <th>Fee Type</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Reference</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Payments)
+                            {
+                                <tr>
+                                    <td>RCP-@item.Id.ToString("D6")</td>
+                                    <td>@item.StudentName (@item.RollNumber)</td>
+                                    <td>@item.ClassName</td>
+                                    <td>@item.FeeTypeName</td>
+                                    <td>@item.AmountPaid.ToString("C")</td>
+                                    <td>@item.PaymentMethod</td>
+                                    <td>@(item.TransactionReference ?? "-")</td>
+                                    <td>@item.PaymentDate.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <span class="badge @(item.IsCancelled ? "bg-danger" : "bg-success")">
+                                            @(item.IsCancelled ? "Cancelled" : "Active")
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (!Model.Collections.Any() && !Model.Payments.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-chart-bar fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No data found for the selected filters</h5>
+                <p class="text-muted">Adjust your filter criteria and try again.</p>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            toggleFilters('@Model.ReportType');
+        });
+
+        function toggleFilters(reportType) {
+            var showDateFilters = ['Daily', 'Monthly', 'PaymentHistory'].includes(reportType);
+            var showClassStudent = ['Class', 'Student', 'Outstanding'].includes(reportType);
+
+            $('input[name="FromDate"], input[name="ToDate"]').closest('.col-md-2').toggle(showDateFilters);
+
+            var classCol = $('select[name="ClassId"]').closest('.col-md-2');
+            var studentCol = $('#studentFilter');
+
+            classCol.toggle(showClassStudent || reportType === 'PaymentHistory');
+            studentCol.toggle(showClassStudent);
+        }
+
+        $('select[name="ClassId"]').change(function() {
+            var classId = $(this).val();
+            if (classId) {
+                $.getJSON('@Url.Action("GetStudentsByClass", "Fees")', { classId })
+                    .done(function(data) {
+                        var studentSelect = $('select[name="StudentId"]');
+                        studentSelect.empty().append('<option value="">All Students</option>');
+                        $.each(data, function(i, s) { studentSelect.append('<option value="' + s.value + '">' + s.text + '</option>'); });
+                    });
+            }
+        });
+    </script>
+}

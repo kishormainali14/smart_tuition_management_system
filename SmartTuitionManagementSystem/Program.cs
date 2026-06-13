@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using SmartTuitionManagementSystem.Data;
 using SmartTuitionManagementSystem.Services;
@@ -5,6 +6,10 @@ using SmartTuitionManagementSystem.Services.Interface;
 using SmartTuitionManagementSystem.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Set culture to Indian English for rupee currency formatting
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-IN");
+CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-IN");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -33,6 +38,7 @@ builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<IExamService, ExamService>();
 builder.Services.AddScoped<ITeacherAttendanceService, TeacherAttendanceService>();
+builder.Services.AddScoped<IFeeService, FeeService>();
 
 var app = builder.Build();
 

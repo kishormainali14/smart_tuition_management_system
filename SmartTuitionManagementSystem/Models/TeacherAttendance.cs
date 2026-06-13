@@ -1,6 +1,7 @@
 // Models/TeacherAttendance.cs
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SmartTuitionManagementSystem.Entities;
 
 namespace SmartTuitionManagementSystem.Models;
 
@@ -120,5 +121,5 @@ public class TeacherAttendance
     public byte[]? RowVersion { get; set; }
 
     // Navigation property
-    public virtual Teacher? Teacher { get; set; }
+    public virtual TeacherEntity? Teacher { get; set; }
 }

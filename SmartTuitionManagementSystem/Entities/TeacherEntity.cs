@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SmartTuitionManagementSystem.Models;
 
 namespace SmartTuitionManagementSystem.Entities;
 
@@ -59,4 +60,7 @@ public class TeacherEntity
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     public DateTime? UpdatedAt { get; set; }
+
+    // Navigation property for attendance records
+    public virtual ICollection<TeacherAttendance>? Attendances { get; set; }
 }

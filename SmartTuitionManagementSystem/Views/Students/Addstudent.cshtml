@@ -47,6 +47,13 @@
                                 <span asp-validation-for="FullName" class="text-danger"></span>
                             </div>
 
+                            <!-- Roll Number -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="RollNumber" class="form-label fw-semibold"></label>
+                                <input asp-for="RollNumber" class="form-control" />
+                                <span asp-validation-for="RollNumber" class="text-danger"></span>
+                            </div>
+
                             <!-- Email -->
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Email" class="form-label fw-semibold"></label>
@@ -61,13 +68,13 @@
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
 
-                            <!-- Grade -->
+                            <!-- Class -->
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Grade" class="form-label fw-semibold"></label>
-                                <select asp-for="Grade" asp-items="Model.GradeOptions" class="form-select">
-                                    <option value="">-- Select Grade --</option>
+                                <label asp-for="ClassId" class="form-label fw-semibold"></label>
+                                <select asp-for="ClassId" asp-items="Model.ClassList" class="form-select">
+                                    <option value="">-- Select Class --</option>
                                 </select>
-                                <span asp-validation-for="Grade" class="text-danger"></span>
+                                <span asp-validation-for="ClassId" class="text-danger"></span>
                             </div>
 
                             <!-- DOB -->

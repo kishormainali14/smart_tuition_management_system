@@ -8,10 +8,11 @@ namespace SmartTuitionManagementSystem.Services.Interface;
 
 public interface IAttendanceService
 {
-    Task<DailyAttendanceViewModel> GetAttendanceSheetAsync(string grade, DateTime date);
-    Task<bool> SaveAttendanceAsync(DailyAttendanceViewModel model, int markedByUserId);
-    Task<List<SelectListItem>> GetGradeListAsync();
+    Task<DailyAttendanceViewModel> GetAttendanceSheetAsync(DateTime date, int classId);
+    Task<(bool Success, bool WasUpdate)> SaveAttendanceAsync(DailyAttendanceViewModel model, int markedByUserId);
+    Task<List<SelectListItem>> GetClassListAsync();
     Task<StudentAttendanceHistoryViewModel> GetStudentHistoryAsync(int studentId);
-    Task<bool> IsAttendanceMarkedAsync(string grade, DateTime date);
-    Task<DailyAttendanceViewModel> CopyFromPreviousDayAsync(string grade, DateTime date);
+    Task<bool> IsAttendanceMarkedAsync(DateTime date, int classId);
+    Task<DailyAttendanceViewModel> CopyFromPreviousDayAsync(DateTime date, int classId);
+    Task<AttendanceReportViewModel> GetAttendanceReportAsync(int? classId, DateTime? fromDate, DateTime? toDate);
 }

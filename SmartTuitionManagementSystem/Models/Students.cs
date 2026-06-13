@@ -27,10 +27,6 @@ public class Students
     [Display(Name = "Date of Birth")]
     public DateTime? DateOfBirth { get; set; }
 
-    [StringLength(50)]
-    [Display(Name = "Grade/Class")]
-    public string Grade { get; set; } = string.Empty;
-
     [StringLength(100)]
     [Display(Name = "Parent/Guardian Name")]
     public string ParentName { get; set; } = string.Empty;

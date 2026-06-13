@@ -2,3 +2,5 @@
 .idea/
 bin/
 obj/
+# Rider user-specific files
+*.DotSettings.user
